@@ -1,2 +1,6 @@
-# VC_PRACTICAS
-Prácticas de la Asignatura "Visión por Computador"
+# Práctica 1 de la Asignatura "Visión por Computador"
+
+- Alba Ramos Quintana
+- Nestor Jesus Henriquez Medina
+
+---
