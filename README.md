@@ -4,7 +4,7 @@ Prácticas de la Asignatura "_Visión por Computador_"
 - Alba Ramos Quintana
 - Néstor Jesús Henríquez Medina
 
-**👥 Grupo 43**
+**👥 Grupo 27**
   
 ---
 
