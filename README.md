@@ -29,9 +29,8 @@ El trabajo realizado así como el código fuente se encuentra en el cuaderno pri
 
 | Archivo | Contenido |
 | --- | --- |
+| [README.md](README.md) | Este fichero que estás leyendo. |
 | [VC_P1.ipynb](VC_P1.ipynb) | Código y explicaciones de las tareas. |
-| [tablero_ajedrez.png](tablero_ajedrez.png) | Tablero generado con OpenCV. |
-| [imagen_mondrian.jpg](imagen_mondrian.jpg) | Composición de rectángulos y líneas. |
 | [spec-list.txt](spec-list.txt) | Fichero de especificación del entorno `Conda` para Windows de 64 bits. |
 
 ## Preparación y ejecución
