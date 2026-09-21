@@ -72,7 +72,7 @@ Se muestran dos posibles soluciones:
 
 1. **Sin IA:** Se utiliza menos cantidad de líneas de código, puesto que se crea una matriz de 1 canal y las casillas claras se pintan de blanco (reciben el valor `1`) y las oscuras no se dibujan, con el consecuente ahorro de cómputo.
 
-2. **Con IA:** crea una imagen de 3 canales y dibuja todas las casillas con `cv2.rectangle`, utilizando valores `0` y `255`. También guarda el resultado con `cv2.imwrite`.
+2. **Con IA (ChatGPT 6 - Astra):** crea una imagen de 3 canales y dibuja todas las casillas con `cv2.rectangle`, utilizando valores `0` y `255`. También guarda el resultado con `cv2.imwrite`.
 
 ![Tablero de ajedrez de ocho filas y ocho columnas con casillas blancas y negras](./img/tablero_ajedrez.png)
 
