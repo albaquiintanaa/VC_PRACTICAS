@@ -18,12 +18,12 @@ El trabajo realizado así como el código fuente se encuentra en el cuaderno pri
 
 - Representar imágenes como matrices de NumPy.
 - Dibujar figuras con OpenCV y visualizar resultados con Matplotlib.
-- TAREA 1: crear tablero de ajedrez (sin uso de IA y con IA).
-- TAREA 2: crear imagen estilo "Mondrian" con funciones OpenCV.
-- TAREA 3: localizar los píxeles de menor y mayor intensidad en una imagen de vídeo en tiempo real.
-- TAREA 4: crear efecto pop art propio: mostrar imagen de vídeo en tiempo real mediante caracteres ASCII.
-- TAREA EXTRA 1: Efecto linterna. Implementación interactiva que sigue la posición del puntero del ratón, revelando dentro de un área circular la imagen original.
-- TAREA EXTRA 2: Combinación del efecto pop art (imagen en ASCII) con el efecto Linterna.
+- <u>[TAREA 1](#tarea-1-tablero-de-ajedrez)</u>: crear tablero de ajedrez (sin uso de IA y con IA).
+- <u>[TAREA 2](#tarea-2-composición-de-estilo-mondrian)</u>: crear imagen estilo "Mondrian" con funciones OpenCV.
+- <u>[TAREA 3](#tarea-3-píxeles-más-claro-y-más-oscuro)</u>: localizar los píxeles de menor y mayor intensidad en una imagen de vídeo en tiempo real.
+- <u>[TAREA 4](#tarea-4-efecto-pop-art-mediante-ascii)</u>: crear efecto pop art propio: mostrar imagen de vídeo en tiempo real mediante caracteres ASCII.
+- <u>[TAREA EXTRA 1](#tarea-extra-1-linterna-sobre-un-filtro-de-puntos)</u>: Efecto linterna. Implementación interactiva que sigue la posición del puntero del ratón, revelando dentro de un área circular la imagen original.
+- <u>[TAREA EXTRA 2](#tarea-extra-2-pop-art-ascii--efecto-linterna)</u>: Combinación del efecto pop art (imagen en ASCII) con el efecto Linterna.
 
 ## Archivos de la práctica
 
@@ -70,7 +70,7 @@ Se construye un tablero de **800 × 800 píxeles**, dividido en **8 × 8 casilla
 
 Se muestran dos posibles soluciones:
 
-1. **Sin IA:** Se utiliza menos cantidad de líneas de código, puesto que se crea una matriz de 1 canal y las casillas claras se pintan de blanco (reciben el valor `1`) y las oscuras no se dibujan, con el consecuente ahorro de cómputo.
+1. **Sin IA:** Se utiliza menos cantidad de líneas de código, puesto que se crea una matriz de 1 canal (escala de grises) y las casillas claras se pintan de blanco (reciben el valor `1`) y las oscuras no se dibujan, con el consecuente ahorro de cómputo.
 
 2. **Con IA (ChatGPT 6 - Astra):** crea una imagen de 3 canales y dibuja todas las casillas con `cv2.rectangle`, utilizando valores `0` y `255`. También guarda el resultado con `cv2.imwrite`.
 
