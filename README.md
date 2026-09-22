@@ -2,7 +2,7 @@
 ---
 ## Práctica de la asignatura **Visión por Computador** centrada en la introducción a la librería **OpenCV**, manipulación de imágenes y gestión y manipulación de vídeo en tiempo real.
 ---
-## Autores
+## 👥 Autores
 
 Este trabajo ha sido realizado por el **`Grupo 27`**: 
 - `Alba Ramos Quintana`.
@@ -60,7 +60,7 @@ conda activate vc-p1
 `NOTA`: Las capturas utilizan `cv2.VideoCapture(0)`, que selecciona la cámara con índice 0. Si tu cámara tiene otro índice, adapta ese valor. Las celdas de dibujo guardan sus imágenes en el directorio de trabajo y pueden sobrescribir los dos ejemplos existentes.
 
 ---
-## Tarea 1: Tablero de ajedrez
+## Tarea 1: Tablero de ajedrez 
 
 Se construye un tablero de **800 × 800 píxeles**, dividido en **8 × 8 casillas de 100 × 100 píxeles**. Para alternar los colores se comprueba la paridad de la suma de la fila y la columna:
 
@@ -113,6 +113,7 @@ Sobre el fotograma en color se dibujan dos marcas de radio 10 y grosor 2:
 | Píxel más claro | Círculo negro | Contrasta con la zona clara. |
 
 Por ejemplo, si la cámara apunta a una hoja blanca sobre una mesa oscura, las marcas señalarán los extremos de brillo encontrados en esa escena. Se buscan píxeles individuales, por lo que las posiciones pueden cambiar entre fotogramas.
+
 ![Pixel más claro y más oscuro marcado en la imagen de vídeo con círculos.](./img/tarea_3_min_y_max_loc.png)
 
 *Resultado: captura de imagen mostrando píxel más claro y píxel más oscuro.*
@@ -148,7 +149,7 @@ La lista original se invierte, de manera que las regiones oscuras se representan
 *Resultado: captura de imagen de vídeo en caracteres ASCII.*
 
 ---
-## TAREA EXTRA 1: Linterna sobre un filtro de puntos
+## TAREA EXTRA 1: Linterna sobre un filtro de puntos 
 
 Una máscara circular de **radio 50 píxeles**, centrada en el puntero, combina dos versiones de la escena:
 
@@ -158,17 +159,33 @@ Una máscara circular de **radio 50 píxeles**, centrada en el puntero, combina 
 La máscara selecciona el interior y su inversa selecciona el exterior. Se aplica `cv2.bitwise_and` a cada imagen y se suman ambas partes con `cv2.add`. Por tanto, la linterna revela el vídeo original sobre el fondo filtrado.
 
 ![Imagen de vídeo con efecto linterna](./img/tarea_extra_1_efecto_linterna.png)
+
 *Resultado: captura de imagen de vídeo con efecto linterna aplicado.*
 
 ---
-## TAREA EXTRA 2: pop art ASCII + efecto linterna
+## TAREA EXTRA 2: pop art ASCII + efecto linterna 
 
 Combinamos el procedimiento de la tarea 4 con la misma máscara circular interactiva: el exterior conserva los caracteres ASCII y el interior muestra la captura original en color, con efecto espejo.
 
 Esta versión obtiene la resolución desde `frame.shape` y coloca el texto en `(x1, y1 + 12)`, desplazando su línea base para que la primera fila de caracteres sea visible.
 
 ![Imagen de vídeo con efecto ASCII+linterna](./img/tarea_extra_2_efecto_ascii_linterna.png)
+
 *Resultado: captura de imagen de vídeo con efecto ASCII+linterna aplicado.*
+
+
+---
+
+## Fuentes y recursos utilizados
+
+Para el desarrollo y resolución de las tareas, se ha consultado la siguiente documentación y recursos en línea:
+
+* **Localización de valores mínimos y máximos (Tarea 3):** Búsqueda en Google de los términos *"cv2 mínimo y máximo"*, para el uso de la función `cv2.minMaxLoc`.
+* **Generación de la paleta de caracteres (Tarea 4):** Búsqueda en Google de secuencias de sombras en texto con el término *"ascii array shadows"*.
+* **Efecto espejo en vídeo (cv2.flip):** [GeeksforGeeks - Python OpenCV cv2.flip() method](https://www.geeksforgeeks.org/python/python-opencv-cv2-flip-method/?utm_source=gemini)
+* **Conversión a escala de grises:** [GeeksforGeeks - Grayscaling of Images using OpenCV](https://www.geeksforgeeks.org/python/python-grayscaling-of-images-using-opencv/?utm_source=gemini)
+* **Operaciones con máscaras y combinación de imágenes (Tareas Extra):** [YouTube - OpenCv Python Tutorial](https://www.youtube.com/watch?v=GqTGE1j3g_s&t=1s&utm_source=gemini)
+* **Soporte de Inteligencia Artificial:** Uso de modelos conversacionales para la generación de código base en la Tarea 1 y la estructuración del repositorio/documentación.
 
 
 ---
