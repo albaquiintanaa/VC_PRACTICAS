@@ -1,8 +1,8 @@
 # VC_PRACTICAS
 Prácticas de la Asignatura "_Visión por Computador_"
 
-- Alba Ramos Quintana.
-- Néstor Jesús Henríquez Medina.
+- [Alba Ramos Quintana](https://github.com/albaquiintanaa).
+- [Néstor Jesús Henríquez Medina](https://github.com/NestorJHM).
 
 **👥 Grupo 27**
   
