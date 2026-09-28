@@ -5,8 +5,8 @@
 ## 👥 Autores
 
 Este trabajo ha sido realizado por el **`Grupo 27`**: 
-- `Alba Ramos Quintana`.
-- `Néstor Jesús Henríquez Medina`.
+- [Alba Ramos Quintana](https://github.com/albaquiintanaa).
+- [Néstor Jesús Henríquez Medina](https://github.com/NestorJHM).
 
 ## Descripción del Trabajo
 
