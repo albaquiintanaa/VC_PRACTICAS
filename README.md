@@ -8,6 +8,6 @@ Prácticas de la Asignatura "_Visión por Computador_"
   
 ---
 
-- [Práctica 1](https://github.com/albaquiintanaa/VC_PRACTICAS/tree/P1)
-
+- [Práctica 1: primeros pasos con OpenCV](https://github.com/albaquiintanaa/VC_PRACTICAS/tree/P1)
+- [Práctica 2: funciones básica de OpenCV](https://github.com/albaquiintanaa/VC_PRACTICAS/tree/P2)
 ---
