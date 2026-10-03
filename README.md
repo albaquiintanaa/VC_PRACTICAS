@@ -66,15 +66,8 @@ Este procedimiento permite identificar las alturas de la imagen en las que exist
 > **Espacio reservado para LA IMAGEN de la Tarea 1**
 > Añadir aquí una captura de la salida de Canny con las filas resaltadas y, opcionalmente, la gráfica del recuento.
 
-<!--
-Ejemplo para incorporar la captura:
+![Resultado de la Tarea 1](img/tarea_1.png)
 
-![Resultado de la Tarea 1](docs/imagenes/tarea1-canny-filas.png)
-
-Ejemplo para incorporar un vídeo o GIF:
-
-[Vídeo demostrativo de la Tarea 1](URL_DEL_VIDEO)
--->
 ---
 ## Tarea 2 — Comparación entre Canny y Sobel
 
