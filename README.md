@@ -156,16 +156,10 @@ La pelota rebota contra los cuatro límites de la imagen. El coeficiente de rebo
 > **Espacio reservado para la evidencia del demostrador de la pelota**
 > Añadir aquí una captura con la pelota, otra con la ventana de histogramas y un vídeo que muestre los golpes y rebotes.
 
-<!--
-Ejemplos para incorporar las capturas:
+### Resultado de la Tarea 3: Vídeo demostración
 
-![Pelota sobre la imagen de la webcam](docs/imagenes/pelota-webcam.png)
-![Histogramas en tiempo real](docs/imagenes/pelota-histogramas.png)
-
-Ejemplo para incorporar el vídeo:
-
-[Vídeo demostrativo de la pelota interactiva](URL_DEL_VIDEO)
--->
+|[Vídeo demostrativo de la pelota interactiva](./img/tarea_3.mp4) |
+----
 
 ## Estructura del proyecto
 
