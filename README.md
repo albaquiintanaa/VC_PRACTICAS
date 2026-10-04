@@ -2,7 +2,9 @@
 
 Práctica de la asignatura **Visión por Computador** dedicada al procesamiento básico de imágenes y vídeo con OpenCV. El trabajo incluye detección de bordes, recuento de píxeles, umbralización, comparación de detectores y dos demostradores interactivos con webcam.
 
-El desarrollo completo se encuentra en el cuaderno [`VC_P2.ipynb`](VC_P2.ipynb).
+El desarrollo completo se encuentra en el siguiente enlace a GitHub: 
+
+ ### [Visión por Computador - Práctica 2](https://github.com/albaquiintanaa/VC_PRACTICAS/tree/P2)
 
 ## Autores
 - [Alba Quintana Ramos](https://github.com/albaquiintanaa)
