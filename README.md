@@ -13,7 +13,7 @@ Este trabajo ha sido realizado por el **`Grupo 27`**:
 1. [Requisitos y ejecución](#requisitos-y-ejecución)
 2. [Tarea 1 — Recuento de píxeles por filas](#tarea-1--recuento-de-píxeles-por-filas)
 3. [Tarea 2 — Comparación entre Canny y Sobel](#tarea-2--comparación-entre-canny-y-sobel)
-4. [Tarea 3 — Pelota interactiva](#demostrador-adicional--pelota-interactiva)
+4. [Tarea 3 — Pelota interactiva](#tarea-3--pelota-interactiva)
 5. [Tarea Extra — Seguimiento por columnas y efecto Cristal Roto](#tarea-extra--seguimiento-por-columnas-y-efecto-cristal-roto)
 6. [Estructura del proyecto](#estructura-del-proyecto)
 7. [Referencias](#referencias)
@@ -162,7 +162,9 @@ La pelota rebota contra los cuatro límites de la imagen. El coeficiente de rebo
 
 ### Resultado de la Tarea 3: Vídeo demostración
 
-[Ver vídeo demostrativo de la pelota interactiva](https://www.google.com/search?q=./videos/tarea_3.mp4)
+https://github.com/user-attachments/assets/38693ce3-5481-4417-9f3d-fbae1b4d8f1b
+
+> `Nota:` _Si el reproductor no se visualiza correctamente, el archivo de vídeo también se encuentra disponible en la ruta [`videos/tarea_3.mp4`](./videos/tarea_3.mp4)._
 
 ---
 
@@ -201,7 +203,9 @@ Durante `80` fotogramas (~2 segundos), la imagen se congela mostrando el último
 
 ### Resultado de la Tarea Extra: Vídeo demostración
 
- [Ver vídeo demostrativo del efecto cristal roto](https://www.google.com/search?q=./videos/tarea_extra.mp4)
+https://github.com/user-attachments/assets/1aec5732-811c-4bbf-a711-c5a419a50a1d
+
+> `Nota:` _Si el reproductor no se visualiza correctamente, el archivo de vídeo también se encuentra disponible en la ruta [`videos/tarea_extra.mp4`](./videos/tarea_extra.mp4)._
 
 ---
 
