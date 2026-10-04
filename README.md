@@ -4,16 +4,17 @@ Práctica de la asignatura **Visión por Computador** dedicada al procesamiento 
 
 El desarrollo completo se encuentra en el cuaderno [`VC_P2.ipynb`](VC_P2.ipynb).
 
+## Autores
+- [Alba Quintana Ramos](https://github.com/albaquiintanaa)
+- [Néstor Jesús Henríquez Medina](https://github.com/NestorJHM)
+
 ## Contenidos
 
 1. [Requisitos y ejecución](#requisitos-y-ejecución)
 2. [Tarea 1 — Recuento de píxeles por filas](#tarea-1--recuento-de-píxeles-por-filas)
 3. [Tarea 2 — Comparación entre Canny y Sobel](#tarea-2--comparación-entre-canny-y-sobel)
-4. [Tarea 3 — Espejo empañado interactivo](#tarea-3--espejo-empañado-interactivo)
-5. [Demostrador adicional — Pelota interactiva](#demostrador-adicional--pelota-interactiva)
-6. [Referencias](#referencias)
-
-## Requisitos y ejecución
+4. [Tarea 3 — Pelota interactiva](#demostrador-adicional--pelota-interactiva)
+5. [Referencias](#referencias)
 
 ### Dependencias
 - OpenCV
@@ -29,7 +30,7 @@ pip install opencv-python numpy matplotlib
 ### Ejecución
 
 1. Clonar o descargar este repositorio.
-2. Abrir `VC_P2.ipynb` con Jupyter Notebook o JupyterLab.
+2. Abrir `VC_P2.ipynb` con Jupyter Notebook o VS Code.
 3. Cada celda es independiente en su ejecución.
 4. Para los demostradores interactivos, permitir el acceso a la webcam.
 ---
@@ -59,12 +60,10 @@ La fila máxima se obtiene con `np.argmax`. Sobre la imagen de Canny se dibujan:
 
 También se representa una gráfica con el recuento obtenido para todas las filas.
 
-### Resultado
+### Resultado de la Tarea 1
 
 Este procedimiento permite identificar las alturas de la imagen en las que existe una mayor concentración de bordes horizontales o de cambios relevantes en la escena.
 
-> **Espacio reservado para LA IMAGEN de la Tarea 1**
-> Añadir aquí una captura de la salida de Canny con las filas resaltadas y, opcionalmente, la gráfica del recuento.
 
 ![Resultado de la Tarea 1](img/tarea_1.png)
 
@@ -110,18 +109,10 @@ Por contra, Sobel umbralizado genera trazos más gruesos y fragmentados, y el re
 
 También se muestra la diferencia absoluta entre las dos salidas y una versión umbralizada de esa diferencia para localizar las discrepancias más significativas.
 
-> **Espacio reservado para la evidencia de la Tarea 2**
-> Añadir aquí la composición comparativa de Canny y Sobel, incluyendo las gráficas de recuento y las diferencias entre ambos métodos.
+### Resultado de la Tarea 2
 
-<!--
-Ejemplo para incorporar la captura:
+![Resultado de la Tarea 2](img/tarea_2.png)
 
-![Comparación entre Canny y Sobel](docs/imagenes/tarea2-canny-sobel.png)
-
-Ejemplo para incorporar un vídeo o GIF:
-
-[Vídeo demostrativo de la Tarea 2](URL_DEL_VIDEO)
--->
 ---
 ## TAREA 3 — Pelota interactiva
 
@@ -153,14 +144,11 @@ posicion += velocidad * dt
 
 La pelota rebota contra los cuatro límites de la imagen. El coeficiente de rebote reduce su velocidad después de cada colisión para representar una pérdida gradual de energía.
 
-Una segunda ventana muestra los histogramas RGB del fotograma y el valor de variación local utilizado para detectar el golpe.
-
 ### Controles
 
 | Tecla | Acción |
 |---|---|
 | `R` | Reinicia la posición y la velocidad de la pelota |
-| `Q` | Cierra el demostrador |
 | `ESC` | Cierra el demostrador |
 
 > **Espacio reservado para la evidencia del demostrador de la pelota**
