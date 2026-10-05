@@ -94,7 +94,7 @@ La imagen `mandril.jpg` se convierte a escala de grises y se suaviza mediante un
 1. Se calculan las derivadas horizontal y vertical con Sobel.
 2. El resultado se convierte a 8 bits con `cv2.convertScaleAbs`.
 3. Se aplica un umbral de valor `130`.
-4. Se obtiene Canny utilizando los umbrales `100` y `200`.
+4. Se obtiene Canny utilizando los umbrales establecidos en la celda de código (actualmente: '100` y `200`).
 5. Se cuentan los píxeles no nulos mediante `np.count_nonzero` (`axis=1` para filas y `axis=0` para columnas).
 6. Se remarcan las filas y columnas seleccionadas sobre las imágenes.
 
@@ -108,14 +108,16 @@ Código de colores utilizado:
 
 | Método | Máximo por fila | Máximo por columna | Filas seleccionadas | Columnas seleccionadas | Píxeles no nulos |
 |---|---:|---:|---:|---:|---:|
-| Canny (100, 200) | 184 | 138 | 5 (`[6, 8, 20, 24, 100]`) | 3 (`[92, 104, 119]`) | 34 763 (13,26 %) |
-| Sobel umbralizado (130) | 161 | 179 | 7 (`[3, 4, 20, 51, 81, 82, 83]`) | 1 (`[288]`) | 31 199 (11,90 %) |
+| Canny (100, 200) | 220 | 187 | 7 | 19 | 55 509 (21,18 %) |
+| Sobel umbralizado (130) | 161 | 179 | 7 | 1 | 31 199 (11,90 %) |
 
 El detector Canny produce contornos generalmente más finos y continuos y conserva más detalle del pelo del mandril.
 
-Por contra, Sobel umbralizado genera trazos más gruesos y fragmentados, y el resultado depende de manera más directa del umbral seleccionado (concentrando gran cantidad de píxeles blancos en bordes verticales de fuerte contraste y descartando otros).
+Por contra, Sobel umbralizado genera trazos más gruesos y fragmentados, aunque el resultado depende de manera más directa del umbral seleccionado.
 
-También se muestra la diferencia absoluta entre las dos salidas y una versión umbralizada para localizar las discrepancias más significativas.
+#### NOTA: Uso de IA
+- En esta tarea 2, a efectos de una mejor visualización de los resultados en cuanto al histograma del recuento por filas, hemos hecho uso de una IA (Codex) para generar el código que nos permite mostrar el histograma con una rotación de 90 grados, concretamente la función "make_axes_locatable".
+- Asimismo, para poder mostrar contenido markdown y que se actualizara según los datos de umbrales de cada detector, hemos hecho uso del módulo IPython.display.
 
 ### Resultado de la Tarea 2
 
@@ -127,7 +129,7 @@ También se muestra la diferencia absoluta entre las dos salidas y una versión 
 
 ### Objetivo
 
-Superponer una pelota virtual sobre la imagen de la webcam y simular su movimiento mediante gravedad, velocidad y rebotes. El usuario puede golpearla hacia arriba moviendo la mano cerca de ella.
+Superponer una pelota virtual sobre la imagen de la webcam y simular su movimiento y rebotes. El usuario puede golpearla moviendo la mano cerca de ella para volver a elevar la pelota.
 
 ### Detección del golpe
 
@@ -237,3 +239,5 @@ VC_PRACTICAS/
 * [Virtual Air Guitar](https://youtu.be/FIAmyoEpV5c?feature=shared)
 
 ---
+## NOTA: Uso de IA
+* Aunque se ha utilizado la IA (Codex) para generar el presente fichero `README.md`, *todo el documento ha sido revisado por sus autores*, añadiendo, modificando o incluso eliminando aquello que se ha estimado conveniente para la correcta comprensión de esta práctica.
