@@ -62,7 +62,7 @@ La suma por filas se realiza con `cv2.reduce`. Como la salida de Canny contiene 
 
 La fila máxima se obtiene con `np.argmax`. Sobre la imagen de Canny se dibujan:
 
-- 🟡 **En amarillo:** la fila con el máximo recuento (`fila_max = 100`).
+- 🟡 **En amarillo:** la fila con el máximo recuento (`fila_max = 12`).
 - 🔴 **En rojo:** las demás filas que superan el 90 % del máximo.
 - Una flecha para destacar visualmente la fila con el máximo recuento (`plt.annotate`).
 
