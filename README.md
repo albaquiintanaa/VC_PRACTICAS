@@ -10,5 +10,5 @@ Prácticas de la Asignatura "_Visión por Computador_"
 
 - [Práctica 1: primeros pasos con OpenCV](https://github.com/albaquiintanaa/VC_PRACTICAS/tree/P1)
 - [Práctica 2: funciones básicas de OpenCV](https://github.com/albaquiintanaa/VC_PRACTICAS/tree/P2)
-- [Práctica 3: análisis de contornos y medición de objetos](https://github.com/albaquiintanaa/VC_PRACTICAS/tree/P3)
+- [Práctica 3: detección y reconocimiento de formas](https://github.com/albaquiintanaa/VC_PRACTICAS/tree/P3)
 ---
