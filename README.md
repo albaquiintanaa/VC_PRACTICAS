@@ -1,24 +1,93 @@
-C## Práctica 3. Detección y reconocimiento de formas
+# Práctica 3 - Detección y reconocimiento de formas
 
-### Contenidos
+Práctica de la asignatura **Visión por Computador** dedicada a la extracción de información geométrica de objetos presentes en una imagen, con el fin de caracterizarlos e identificarlos de forma automática en distintas categorías sin hacer uso de modelos de aprendizaje profundo _(Deep Learning)_.
 
-[Aspectos cubiertos](#31-aspectos-cubiertos)  
-[Entrega](#32-entrega)
+## 👥 Autores
 
-### 3.1. Aspectos cubiertos
+Este trabajo ha sido realizado por el **`Grupo 27`**: 
+- [Alba Quintana Ramos](https://github.com/albaquiintanaa)
+- [Néstor Jesús Henríquez Medina](https://github.com/NestorJHM)
 
-En esta práctica el objetivo es adquirir nociones para extraer información geométrica de objetos presentes en una imagen, con el fin de caracterizarlos y posteriormente ser capaz de identificarlos de forma automática en categorías. Si bien se reitera en el apartado de la entgera, **no se plantea** para la resolución de las tareas, la utilización de **modelos de aprendizaje profundo**. El cuaderno de la práctica, *VC_P3.ipynb*, contiene diversos ejemplos mostrando variantes para la detección de objetos presentes en la imagen, como paso previo a su caracterización geométrica. En este sentido, se plantea el uso del umbralizado y la detección de contornos. Para el caso concreto de monedas, se considera también la utilización de la transformada de Hough para la localización de formas circulares.
+## Contenidos
 
+1. [Requisitos y ejecución](#requisitos-y-ejecución)
+2. [Tarea 1.1 — Detección, clasificación y conteo en imagen](#tarea-11--detección,-clasificación-y-conteo-en-imagen)
 
-Si bien no es necesario instalar paquetes adicionales para las primeras celdas del cuaderno, de cara a poder obtener la matriz de confusión, es requisito instalar en el *environment* los paquetes *scikit-learn* y *seaborn* para disponer de utilidades para el cálculo de [métricas](https://developers.google.com/machine-learning/crash-course/classification/accuracy-precision-recall?hl=es-419). Con *pip* sería algo como:
+---
+
+## Requisitos y ejecución
+
+### Dependencias
+
+Además de las librerías habituales de visión, para poder interactuar con la ventana gráfica en la Tarea 1.1 es **imprescindible** instalar el *backend* `PyQt5`. Para las futuras métricas de la Tarea 2 se requerirán herramientas de análisis de datos:
+
+* OpenCV (`opencv-python`)
+* NumPy (`numpy`)
+* Matplotlib (`matplotlib`)
+* **PyQt5 (`PyQt5`)** *(Necesario para habilitar `%matplotlib qt`)*
+* Scikit-Learn (`scikit-learn`)
+* Seaborn (`seaborn`)
+
+Las dependencias pueden instalarse con:
+
+```bash
+pip install opencv-python numpy matplotlib PyQt5 scikit-learn seaborn
 
 ```
-pip install scikit-learn seaborn
-```
 
-### 3.2. Entrega
+### Ejecución
 
-Para la entrega de esta práctica, son **dos las tareas planteadas**. Para ninguna de ellas deben integrar modelos de **aprendizaje profundo**:
+1. Clonar o descargar este repositorio (rama `P3`).
+2. Abrir `VC_P3.ipynb` con Jupyter Notebook o VS Code.
+3. Cada celda es independiente en su ejecución.
+4. **Importante (Tarea 1.1):** Es necesario tener configurado el entorno gráfico interactivo (`%matplotlib qt`) para la calibración manual con el ratón. Al ejecutar la celda, se abrirá una ventana emergente donde se debe hacer clic.
+
+
+---
+# Tareas realizadas
+---
+
+## Tarea 1.1 — Detección, clasificación y conteo en imagen
+
+### Objetivo
+
+Determinar el valor individual y la cantidad total de dinero presente en una imagen estática (`Monedas.jpg`) que contiene distintas monedas. El reto radica en establecer una correspondencia métrica real a partir de los píxeles de la imagen basándose en una referencia conocida.
+
+### Procedimiento
+
+El proceso se divide en dos fases principales: **segmentación** y **clasificación geométrica mediante calibración**.
+
+**1. Preprocesamiento y Segmentación:**
+
+* La imagen original se convierte a escala de grises.
+* Se aplica una umbralización automática utilizando el método de **Otsu** (`cv2.THRESH_OTSU`), que busca de manera autónoma el corte óptimo para separar las monedas del fondo.
+* Se extraen únicamente los contornos externos mediante `cv2.findContours` con el flag `cv2.RETR_EXTERNAL`.
+
+**2. Calibración interactiva:**
+
+* El sistema muestra la imagen y detiene la ejecución esperando un clic del usuario (`plt.ginput`).
+* El usuario debe **hacer clic sobre una moneda de 1€**.
+* Mediante `cv2.pointPolygonTest`, el algoritmo identifica en qué contorno cayó el clic.
+* Una vez aislado, se calcula su círculo envolvente mínimo (`cv2.minEnclosingCircle`) para obtener su diámetro en píxeles.
+* Al saber que la moneda de 1€ mide oficialmente `23.25 mm`, se establece el **factor de escala** (mm por píxel). El contorno de referencia se resalta en 🟢 **verde** para confirmar la selección.
+
+**3. Clasificación y recuento:**
+
+* El algoritmo vuelve a iterar sobre todos los contornos encontrados.
+* Se aplica un **filtro de ruido**: cualquier contorno con un diámetro inferior a 15 mm (según la escala calculada) es ignorado.
+* Para los contornos válidos, se mide su diámetro, se convierte a milímetros reales y se compara con un diccionario interno que contiene los tamaños oficiales del Euro.
+* Se asigna el valor cuya diferencia absoluta de diámetro sea la menor.
+* Se anota de forma dinámica sobre la imagen el valor detectado en el centroide de cada moneda y se suma al montante total, representándose en el límite inferior de la imagen de forma centrada.
+
+
+### Resultado de la Tarea 1.1
+
+
+---
+
+
+
+---
 
 - En la **primera tarea**, el reto o tarea consiste en determinar la cantidad de dinero y monedas presentes en la imagen captada en vivo con la webcam. Una extensión válida sería la presencia de objetos que no sean monedas en la imagen analizada.
 
@@ -45,10 +114,4 @@ En relación a la segmentación de las partículas, una probable primera observa
 
 Si quieren ir más allá, sugerir explorar técnicas de segmentación recientes y potentes como [Segment anything o SAM](https://segment-anything.com) o [OneFormer](https://github.com/SHI-Labs/OneFormer), y extensiones como , [SAM 2](https://github.com/facebookresearch/segment-anything-2), [FastSAM](https://github.com/CASIA-IVA-Lab/FastSAM) o [Count anything](https://github.com/ylqi/Count-Anything). No duden en compartir otras alternativas que descubran.-->
 
-Como en las prácticas previas, la entrega se realizará a través del campus virtual, remitiendo un enlace al repositorio **github**, donde se alojará el **cuaderno o cuadernos** de resolución de las tareas, además de su correspondiente **README** describiendo el proceso adoptado para resolver cada tarea, la detallar la asistencia recibida por herramientas de IA, integrando de imágenes ilustrativas, además de las métricas obtenidas y matriz de confusión de la segunda tarea.
-
-<!---Momentos en trabajo de Nayar sobre Binary images https://cave.cs.columbia.edu/Statics/monographs/Binary%20Images%20FPCV-1-3.pdf -->
-
-
-***
-Bajo licencia de Creative Commons Reconocimiento - No Comercial 4.0 Internacional
+---
