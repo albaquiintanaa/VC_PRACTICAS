@@ -11,7 +11,12 @@ Este trabajo ha sido realizado por el **`Grupo 27`**:
 ## Contenidos
 
 1. [Requisitos y ejecución](#requisitos-y-ejecución)
-2. [Tarea 1.1 — Detección, clasificación y conteo en imagen](#tarea-11--detección,-clasificación-y-conteo-en-imagen)
+2. [Tarea 1 - Detección y reconocimiento de monedas](#tarea-1---detección-y-reconocimiento-de-monedas)
+    - [Tarea 1.1: Cálculo del dinero en una imagen](#tarea-11-cálculo-del-dinero-en-una-imagen)
+    - [Tarea 1.2: Demostrador interactivo en tiempo real](#tarea-12-demostrador-interactivo-en-tiempo-real)
+3. [Tarea 2 - Segmentación y clasificación de microplásticos](#tarea-2---segmentación-y-clasificación-de-microplásticos)
+4. [Estructura del proyecto](#estructura-del-proyecto)
+5. [Referencias](#referencias)
 
 ---
 
@@ -19,7 +24,7 @@ Este trabajo ha sido realizado por el **`Grupo 27`**:
 
 ### Dependencias
 
-Además de las librerías habituales de visión, para poder interactuar con la ventana gráfica en la Tarea 1.1 es **imprescindible** instalar el *backend* `PyQt5`. Para las futuras métricas de la Tarea 2 se requerirán herramientas de análisis de datos:
+Además de las librerías habituales, para poder interactuar con la ventana gráfica en la Tarea 1.1 es **imprescindible** instalar el *backend* `PyQt5`. Para las futuras métricas de la Tarea 2 se requerirán herramientas de análisis de datos:
 
 * OpenCV (`opencv-python`)
 * NumPy (`numpy`)
@@ -47,71 +52,94 @@ pip install opencv-python numpy matplotlib PyQt5 scikit-learn seaborn
 # Tareas realizadas
 ---
 
-## Tarea 1.1 — Detección, clasificación y conteo en imagen
+## Tarea 1 - Detección y reconocimiento de monedas
+
+### Tarea 1.1: Cálculo del dinero en una imagen
+
+#### Objetivo
+
+Determina la cantidad total de dinero presente en una imagen estática de monedas a partir de sus dimensiones. Para ello, se establece una relación paramétrica entre píxeles y milímetros utilizando como referencia una moneda de valor conocido (1€) y se comparan los diámetros medidos con las dimensiones oficiales de las monedas de euro.
+
+#### Procedimiento
+
+1. Se carga la imagen y se convierte a escala de grises.
+2. Para mitigar el ruido y aislar las monedas, se evaluaron dos filtros de desenfoque:
+    - **Filtro Mediana (`cv2.medianBlur`):** Si bien elimina eficazmente el ruido sal y pimienta, tiende a deformar la circularidad de los contornos finos.
+    - **Filtro Gaussiano (`cv2.GaussianBlur`):** Al ponderar la vecindad por cercanía, suaviza las texturas internas de la moneda preservando de manera más precisa su geometría circular global. Se seleccionó este filtro para el procesamiento final.
+3. Se emplea el método de **Otsu** (`cv2.THRESH_OTSU`) para separar automáticamente la figura del fondo, generando una máscara binaria invertida (monedas blancas sobre fondo oscuro)
+4. Se localizan las componentes conectadas de los objetos detectados mediante `cv2.findContours`.
+5. Mediante `plt.ginput`, se solicita al usuario que haga clic sobre la moneda de 1€, el sistema verifica en qué contorno fue el clic mediante la función de testeo de polígonos `cv2.pointPolygonTest`, se calcula el radio de la circunferencia envolvente (`cv2.minEnclosingCircle`) y se establece el factor de escala (mm/px).
+6. Se iteran los contornos filtrando previamente el ruido ambiental (objetos menores a 15mm) y se extrapola el diámetro en milímetros y se clasifica iterando sobre un diccionario de medidas reales, asignando el valor de la moneda que devuelva el error absoluto mínimo respecto a la medida en píxeles.
+
+#### Resultado de la Tarea 1.1
+
+Las fases por las que ha pasado para obtener dicho resultado son las siguientes:
+
+| Paso del algoritmo | Previsualización | Descripción |
+| :---: | :---: | :--- |
+| **1. Original** | <img src="tarea_1/1_original_gris.jpg" width="300"> | Imagen de entrada original leída en formato BGR y convertida a escala de grises. |
+| **2a. Filtro Gaussiano (Elegido)** | <img src="tarea_1/2_suavizada_gaussiana.jpg" width="300"> | Filtro lineal (`5x5`). Se selecciona para el procesamiento final ya que suaviza las texturas internas de la moneda preservando mejor la forma geométrica global del contorno. |
+| **2b. Filtro Mediana (Descartado)** | <img src="tarea_1/2_suavizada_mediana.jpg" width="300"> | Filtro no lineal. Aunque elimina eficazmente el ruido sal y pimienta, tiende a deformar y pixelar la circularidad de los bordes. |
+| **3. Binarización** | <img src="tarea_1/3_binarizada.jpg" width="300"> | Separación de fondo y figura aplicando el método de umbralización invertida automática de Otsu (`cv2.THRESH_OTSU`) sobre la imagen suavizada. |
+| **4. Resultado Final** | <img src="tarea_1/4_resultado.jpg" width="300"> | Extracción de contornos externos, cálculo del diámetro haciendo el click en la moneda indicada y clasificación de los valores. |
+
+
+---
+
+### Tarea 1.2: Demostrador interactivo en tiempo real
+
+#### Objetivo
+
+Diseña un demostrador que utilice la cámara para detectar las monedas presentes en una escena y determinar la cantidad de dinero total, sin utilizar modelos de aprendizaje profundo.
+
+#### Procedimiento
+
+
+
+#### Resultado de la Tarea 1.2
+
+
+---
+
+## Tarea 2 - Segmentación y clasificación de microplásticos
 
 ### Objetivo
 
-Determinar el valor individual y la cantidad total de dinero presente en una imagen estática (`Monedas.jpg`) que contiene distintas monedas. El reto radica en establecer una correspondencia métrica real a partir de los píxeles de la imagen basándose en una referencia conocida.
+Aplicar técnicas de umbralizado y análisis morfológico para segmentar muestras de microplásticos procedentes de imágenes reales, desarrollando un clasificador automático basado en descriptores geométricos y visuales.
+
 
 ### Procedimiento
 
-El proceso se divide en dos fases principales: **segmentación** y **clasificación geométrica mediante calibración**.
 
-**1. Preprocesamiento y Segmentación:**
-
-* La imagen original se convierte a escala de grises.
-* Se aplica una umbralización automática utilizando el método de **Otsu** (`cv2.THRESH_OTSU`), que busca de manera autónoma el corte óptimo para separar las monedas del fondo.
-* Se extraen únicamente los contornos externos mediante `cv2.findContours` con el flag `cv2.RETR_EXTERNAL`.
-
-**2. Calibración interactiva:**
-
-* El sistema muestra la imagen y detiene la ejecución esperando un clic del usuario (`plt.ginput`).
-* El usuario debe **hacer clic sobre una moneda de 1€**.
-* Mediante `cv2.pointPolygonTest`, el algoritmo identifica en qué contorno cayó el clic.
-* Una vez aislado, se calcula su círculo envolvente mínimo (`cv2.minEnclosingCircle`) para obtener su diámetro en píxeles.
-* Al saber que la moneda de 1€ mide oficialmente `23.25 mm`, se establece el **factor de escala** (mm por píxel). El contorno de referencia se resalta en 🟢 **verde** para confirmar la selección.
-
-**3. Clasificación y recuento:**
-
-* El algoritmo vuelve a iterar sobre todos los contornos encontrados.
-* Se aplica un **filtro de ruido**: cualquier contorno con un diámetro inferior a 15 mm (según la escala calculada) es ignorado.
-* Para los contornos válidos, se mide su diámetro, se convierte a milímetros reales y se compara con un diccionario interno que contiene los tamaños oficiales del Euro.
-* Se asigna el valor cuya diferencia absoluta de diámetro sea la menor.
-* Se anota de forma dinámica sobre la imagen el valor detectado en el centroide de cada moneda y se suma al montante total, representándose en el límite inferior de la imagen de forma centrada.
-
-
-### Resultado de la Tarea 1.1
+### Resultado de la Tarea 2
 
 
 ---
 
+## Estructura del Proyecto
+
+---
+
+## Referencias
+
+- [Material docente oficial: ULPGC - Visión por Computador, Tema 3 (Procesamiento de imagen).](https://aep27.ulpgc.es/mod/resource/view.php?id=183113)
+
+### Tarea 1: Detección y reconocimiento de monedas
+
+- [Tutorial OpenCV - Función findContours (HetPro)](https://hetpro-store.com/TUTORIALES/opencv-findcontours/?srsltid=AU7gw4Vh8qvHAzdz3LKVhhBp38z6-qQP5ekuIxHiYYR8xJRL_PztFQNX)
+- [Documentación Matplotlib - matplotlib.pyplot.ginput](https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.ginput.html)
+- [Documentación OpenCV - Contour Features](https://docs.opencv.org/4.13.0/dd/d49/tutorial_py_contour_features.html)
+- Búsquedas de Google: 
+    - "ginput() en ipynb"
+    - "Averiguar punto dentro de un contorno con findContours()".
+
+### Tarea 2: Segmentación y clasificación de microplásticos
 
 
 ---
 
-- En la **primera tarea**, el reto o tarea consiste en determinar la cantidad de dinero y monedas presentes en la imagen captada en vivo con la webcam. Una extensión válida sería la presencia de objetos que no sean monedas en la imagen analizada.
+## NOTA: Uso de IA
 
-- En la **segunda tarea**, deben desarrollar un procedimiento que extraiga partículas de una imagen de test, y las clasifique en tres clases posibles. Deben tener claro que la imagen de test no puede utilizarse para ajustar el procedimiento, para ello cuentan con las imágenes de entrenamiento. En este sentido, además de la imagen de test *MPs_test.jpg* con su correspondiente archivo de anotaciones *MPs_test_bbs.csv*, se proporcionan de cara al entrenamiento, imágenes de tres clases de objetos recogidos en playas canarias: fragmentos plásticos, *pellets* y alquitrán. Para cada categoría se proporciona una imagen completa y una subimagen de la misma. Las dos primeras categorías se consideran microplásticos cuando miden menos de 5mm, mientras que la tercera es muy habitual encontrarlas en playas canarias. Observar que dado que cada imagen contiene muestras de una única categoría, a efectos prácticos disponen de un conjunto de datos anotado. La tarea propuesta consiste en hacer uso de las imágenes de entrenamiento proporcionadas, extraer de forma automatizada las partículas e identificar patrones en sus características geométricas y de apariencia o entrenar un clasificador con ellas, que puedan permitir la clasificación de las partículas en la imagen de test. El resultado obtenido en la imagen de test, debe mostrarse por medio las métricas mostradas en el cuaderno, incluyendo la matriz de confusión, donde se comparan las anotaciones con las predicciones.
-
-![Confusión](MatrizConfu.png)  
-*Ejemplo de matriz de confusión*
-
-A la hora de considerar posibles características geométricas, como punto de partida para la extracción de descriptores de las partículas, se proporciona enlace al trabajo [SMACC: A System for Microplastics Automatic Counting and Classification](https://doi.org/10.1109/ACCESS.2020.2970498) en el que se adoptan algunas propiedades geométricas para dicho fin. De forma resumida, las características geométricas utilizadas en dicho trabajo fueron:
-
-- Área en píxeles (A)
-- Perímetro en píxeles (P)
-- Compacidad (relación del cuadrado del perímetro con el área C=P^2/A)
-- Relación del área de la partícula con el área del contenedor que la contiene
-- Relación del ancho y el alto del contenedor
-- Relación entre los ejes de la elipse ajustada
-- Definido el centroide, relación entre las distancias menor y mayor al contorno
-
-En relación a la segmentación de las partículas, una probable primera observación es que la aplicación del umbralizado para separarlas del fondo, es delicada. Preprocesamiento como el ecualizado del histograma, suavizar la imagen de entrada o reducir su tamaño, o aplicar heurísticas basadas en el tamaño mínimo y máximo de los contornos localizados, y la distancia mínima entre ellos, pueden ayudar a filtrar falsas detecciones, pero a pesar de ello, será un desafío obtener una separación perfecta para todas las imágenes con la misma estrategia. Añadir, que la imagen de fragmentos contiene unas 80 partículas, la de *pellets* unas 55 y la de alquitrán unas 54.
-
-<!--
-![Contornos](Output.jpg)  
-*Ejemplo ilustrativo contornos detectados en la imagen de fragmentos*
-
-Si quieren ir más allá, sugerir explorar técnicas de segmentación recientes y potentes como [Segment anything o SAM](https://segment-anything.com) o [OneFormer](https://github.com/SHI-Labs/OneFormer), y extensiones como , [SAM 2](https://github.com/facebookresearch/segment-anything-2), [FastSAM](https://github.com/CASIA-IVA-Lab/FastSAM) o [Count anything](https://github.com/ylqi/Count-Anything). No duden en compartir otras alternativas que descubran.-->
+* En la elaboración de esta práctica se ha empleado uso de IA como apoyo para la estructuración del documento `README.md`. Todo el código ha sido verificado y comprendido íntegramente por los autores para ajustarse a las especificaciones teóricas evaluables en la asignatura.
 
 ---
