@@ -15,6 +15,13 @@ Este trabajo ha sido realizado por el **`Grupo 27`**:
     - [Tarea 1.1: Cálculo del dinero en una imagen](#tarea-11-cálculo-del-dinero-en-una-imagen)
     - [Tarea 1.2: Demostrador interactivo en tiempo real](#tarea-12-demostrador-interactivo-en-tiempo-real)
 3. [Tarea 2 - Segmentación y clasificación de microplásticos](#tarea-2---segmentación-y-clasificación-de-microplásticos)
+    
+    - [Paso 1: carga de imágenes](#paso-1-cargar-las-imágenes)
+    - [Paso 2: Separar y medir las partículas de entrenamiento](#paso-2-separar-y-medir-las-partículas-de-entrenamiento)
+    - [Paso 3: Reglas de características para las clases FRA, PEL y TAR](#paso-3-reglas-de-características-para-fra-pel-y-tar)
+    - [Paso 4: Encontrar y clasificar las partículas del test](#paso-4-encontrar-y-clasificar-las-partículas-del-test)
+    - [Paso 5: Comprobar los aciertos y los errores](#paso-5-comprobar-los-aciertos-y-los-errores)
+
 4. [Estructura del proyecto](#estructura-del-proyecto)
 5. [Referencias](#referencias)
 
@@ -204,8 +211,11 @@ Para reconocer el **alquitrán**, además, miramos dos cosas: lo oscura que es l
 - **Saturación media**: indica cuánto color tiene la partícula. Un objeto negro o gris suele tener poca saturación; uno azul intenso puede tener mucha, aunque también sea oscuro. Esto ayuda a distinguir algunos fragmentos de las partículas de alquitrán.
 
 Para calcular el gris corregido usamos tres referencias:
+
 1. El **gris de la partícula**. Ordenamos sus píxeles de más oscuros a más claros y tomamos el valor situado en la posición del 25 %. Así los reflejos claros influyen menos.
+
 2. El **gris del fondo cercano**. Miramos una pequeña franja alrededor de la partícula y tomamos su valor central de gris, evitando las demás partículas detectadas.
+
 3. El **gris más oscuro de toda la fotografía**. Lo usamos como referencia para ajustar la comparación.
 
 Con esos valores obtenemos un número entre 0 y 1. Es un ajuste aproximado, puesto que puede fallar si hay ruido o cambia mucho la iluminación. (funcion `medir_apariencia(gris, saturacion, siluetas, contorno, referencia_oscura)`)
@@ -227,6 +237,34 @@ Aplicamos estas condiciones **en este orden**. La primera que se cumple decide l
 | 4 | Resto de los casos | FRA. |
 
 La primera condición permite encontrar alquitrán negro sin obligarle a ser irregular. Su límite de saturación es estricto para no tomar como alquitrán cualquier pellet oscuro que conserve color. La condición de PEL protege los pellets algo oscuros pero redondeados. La segunda condición TAR admite alquitrán menos negro, siempre que no tenga demasiado color ni haya cumplido la condición de PEL. **Los dos caminos hacia TAR exigen oscuridad: una partícula clara nunca recibe esa clase.** Todavía puede haber pellets negros o fragmentos oscuros que cumplan una condición TAR; son los límites de estas reglas, pues no son perfectas.
+
+#### Resultados del entrenamiento
+```
+Clase / medida: percentil 25, mediana, percentil 75, percentil 90
+FRA / compacidad: 16.749, 18.596, 25.521, 76.530
+FRA / relacion_distancias: 0.278, 0.433, 0.571, 0.633
+FRA / ocupacion_contenedor: 0.508, 0.633, 0.675, 0.714
+FRA / gris_corregido: 0.557, 0.776, 0.828, 0.861
+FRA / saturacion_media: 0.094, 0.138, 0.264, 0.409
+PEL / compacidad: 14.299, 14.462, 14.865, 15.878
+PEL / relacion_distancias: 0.735, 0.832, 0.871, 0.894
+PEL / ocupacion_contenedor: 0.738, 0.757, 0.769, 0.782
+PEL / gris_corregido: 0.491, 0.591, 0.667, 0.696
+PEL / saturacion_media: 0.239, 0.317, 0.414, 0.548
+TAR / compacidad: 15.379, 16.009, 16.973, 18.354
+TAR / relacion_distancias: 0.488, 0.553, 0.653, 0.746
+TAR / ocupacion_contenedor: 0.648, 0.677, 0.706, 0.744
+TAR / gris_corregido: 0.106, 0.134, 0.158, 0.200
+TAR / saturacion_media: 0.076, 0.086, 0.096, 0.113
+
+Entrenamiento: 162/183 aciertos (88.5 %)
+Filas: clase real; columnas: FRA, PEL, TAR
+    
+ FRA [  65  1   8]
+ PEL [  6   44  5]
+ TAR [  0   1   53]
+       FRA PEL TAR
+ ```
 
 ---
 
@@ -300,19 +338,18 @@ Hay **13 confusiones de clase**, **31 anotaciones sin pareja** y **20 deteccione
 
 La detección obtiene una precisión de **0,817**, recall **0,742** y F1 **0,777**. El F1 macro del proceso completo es **0,700**.
 
-### MATRIZ DE CONFUSIÓN FINAL
+### Matriz final de confusión
 ![Matriz final de confusión](./tarea_2/resultados/matriz_confusion_final.png)
 
 ---
 ## Estructura del Proyecto
 
-Los archivos principales y los resultados generados quedan organizados de la siguiente forma:
+La estructura actual del proyecto es la siguiente. El cuaderno `VC_P3.ipynb` contiene las dos tareas: reconocimiento de monedas y clasificación de partículas.
 
 ```text
 VC_PRACTICAS/
-├── README.md                         # Descripción y explicación de la práctica
-├── VC_P3.ipynb                       # Cuaderno general de la práctica
-├── TAREA-2.ipynb                     # Clasificación de partículas en cinco pasos
+├── README.md                        # Descripción y explicación de la práctica
+├── VC_P3.ipynb                      # Tarea 1: monedas y Tarea 2: microplásticos
 ├── Monedas.jpg                      # Imagen de monedas para la Tarea 1
 ├── monedas2.jpg                     # Otra imagen de monedas
 ├── FRA.JPG                          # Imagen completa de fragmentos
@@ -322,19 +359,18 @@ VC_PRACTICAS/
 ├── PEL-MINI.png                     # Recorte con pellets
 ├── TAR-MINI.png                     # Recorte con alquitrán
 ├── MPs_test.jpg                     # Imagen de test con las tres clases
-├── MPs_test_bbs.csv                  # Clases y rectángulos de las partículas anotadas
-├── modelos/                         # Carpeta vacía
+├── MPs_test_bbs.csv                 # Clases y rectángulos de las partículas anotadas
 ├── tarea_1/                         # Resultados del procesamiento de monedas
 │   ├── 1_original_gris.jpg
 │   ├── 2_suavizada_gaussiana.jpg
 │   ├── 2_suavizada_mediana.jpg
 │   ├── 3_binarizada.jpg
 │   └── 4_resultado.jpg
-└── tarea_2/
-    └── resultados/                  # Archivos generados por TAREA-2.ipynb
-        ├── FRA_mascara.png
-        ├── PEL_mascara.png
-        ├── TAR_mascara.png
+└── tarea_2/                         # Resultados de la clasificación de partículas
+    └── resultados/                  # Máscaras, predicciones y evaluación del test
+        ├── FRA_mascara.png                    # Máscara de los fragmentos de entrenamiento
+        ├── PEL_mascara.png                    # Máscara de los pellets de entrenamiento
+        ├── TAR_mascara.png                    # Máscara del alquitrán de entrenamiento
         ├── entrenamiento.png                  # Máscaras y contornos del entrenamiento
         ├── caracteristicas_entrenamiento.csv  # Medidas de cada partícula de entrenamiento
         ├── resumen_entrenamiento.csv          # Resumen de las medidas por clase
@@ -349,11 +385,17 @@ VC_PRACTICAS/
         └── matriz_confusion_final.png         # Matriz de clasificación FRA, PEL y TAR
 ```
 
-`TAREA-2.ipynb` utiliza las imágenes completas `FRA.JPG`, `PEL.JPG` y `TAR.JPG` para medir las partículas de entrenamiento. Después clasifica `MPs_test.jpg` y consulta `MPs_test_bbs.csv` para comprobar los resultados. Las imágenes y los CSV de `tarea_2/resultados/` se generan al ejecutar el cuaderno de arriba abajo.
+- Todos los archivos de entrada están en la carpeta principal, junto a `VC_P3.ipynb`. 
+
+- La **Tarea 1** utiliza las imágenes de monedas.
+
+- La **Tarea 2** utiliza las imágenes completas `FRA.JPG`, `PEL.JPG` y `TAR.JPG` para medir las partículas de entrenamiento; después clasifica `MPs_test.jpg` y consulta `MPs_test_bbs.csv` para comprobar los resultados.
+
+- Las imágenes y los CSV de `tarea_2/resultados/` se generan al ejecutar las celdas de la Tarea 2 en orden.
 
 ---
 
-## Referencias
+# Referencias
 
 - [Material docente oficial: ULPGC - Visión por Computador, Tema 3 (Procesamiento de imagen).](https://aep27.ulpgc.es/mod/resource/view.php?id=183113)
 - [Material docente oficial: ULPGC - Visión por Computador, Tema 4 (Detección de características).](https://aep27.ulpgc.es/mod/resource/view.php?id=183117)
