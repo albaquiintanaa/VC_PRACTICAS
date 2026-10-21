@@ -415,7 +415,7 @@ VC_PRACTICAS/
     - "Averiguar punto dentro de un contorno con findContours()".
 
 ### Tarea 2: Segmentación y clasificación de microplásticos
-- [Material docente de la asignatura.](https://github.com/otsedom/otsedom.github.io/tree/main/VC/P3)
+- [Material docente de la Práctica 3](https://github.com/otsedom/otsedom.github.io/tree/main/VC/P3)
 - [Documentación Matplotlib](https://matplotlib.org/stable/index.html)
 - [Documentación OpenCV](https://docs.opencv.org/)
 
