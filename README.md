@@ -164,8 +164,8 @@ Este primer método captura el fotograma y aplica una ecualización de histogram
 
 | Fase del desarrollo | Demostración | Comentarios |
 | --- | --- | --- |
-| **Primer Método** |  | Cuando las monedas se tocan, el método por contornos crea una figura irregular gigante o no detecta ningún círculo, fallando el conteo. |
-| **Método Definitivo** |  | El uso de `HoughCircles` permite separar los objetos, mientras que la separación HSV en 3 grupos y la moda temporal congelan el resultado del cálculo en vivo. |
+| **Primer Método** | https://github.com/user-attachments/assets/01afd31a-1ea5-4203-8c37-b298c7086ec7 | Cuando las monedas se tocan, el método por contornos crea una figura irregular gigante o no detecta ningún círculo, fallando el conteo. |
+| **Método Definitivo** | https://github.com/user-attachments/assets/fc0a68bf-19ae-4cdf-9fb4-bc754751fbde | El uso de `HoughCircles` permite separar los objetos, mientras que la separación HSV en 3 grupos y la moda temporal congelan el resultado del cálculo en vivo. |
 
 
 ---
