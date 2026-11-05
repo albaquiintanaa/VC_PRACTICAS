@@ -1,0 +1,8 @@
+# Carpeta del dataset
+/dataset_plates/
+
+# Pesos de los modelos YOLO
+*.pt
+
+# Repo con dependencia descargada
+/RT-DETR/
