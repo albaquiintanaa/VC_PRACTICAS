@@ -1,8 +1,31 @@
-# Carpeta del dataset
-/dataset_plates/
+# Repositorio oficial de RT-DETR (se clona desde el cuaderno; tiene su propio .git)
+/RT-DETR/
 
-# Pesos de los modelos YOLO
+# Pesos de los modelos (se descargan solos)
+weights/
+*.pth
 *.pt
 
-# Repo con dependencia descargada
-/RT-DETR/
+# Datasets (se entregan por enlace)
+/dataset/
+/dataset_1920/
+/dataset_plates/
+
+# Vídeo de entrada del enunciado (193 MB, supera el límite de GitHub)
+video_practica.MP4
+
+# Python y Jupyter
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# Temporales y logs
+*.log
+*.tmp
+*.part
+
+# Sistema operativo y editor
+Thumbs.db
+desktop.ini
+.DS_Store
+.vscode/
