@@ -1,4 +1,4 @@
-"""Evaluación pareada de PaddleOCR y SmolVLM. Ejecutar desde vc_plates.ipynb."""
+"""Evaluación pareada de PaddleOCR y SmolVLM. Ejecutar desde VC_P4_YOLO_OCR.ipynb."""
 import argparse
 import csv
 import hashlib
