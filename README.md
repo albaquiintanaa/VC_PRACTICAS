@@ -1042,7 +1042,7 @@ Comparado con las alternativas de aprendizaje profundo, que encuentran el 69 % (
 
 ## 15. Referencias
 
-- Material de la práctica: [enunciado de la Práctica 4](https://github.com/otsedom/otsedom.github.io/tree/main/VC/P4).
+- Material de la práctica: [Práctica 4](https://github.com/otsedom/otsedom.github.io/tree/main/VC/P4) y [Práctica 4b](https://github.com/otsedom/otsedom.github.io/tree/main/VC/P4b).
 - Ultralytics: [seguimiento de objetos](https://docs.ultralytics.com/modes/track/).
 - Ultralytics: [conversión de anotaciones de COCO a YOLO](https://docs.ultralytics.com/es/guides/coco-to-yolo).
 - PaddleOCR: [módulo de reconocimiento de texto, API 3.x](https://www.paddleocr.ai/main/en/version3.x/module_usage/text_recognition.html).
