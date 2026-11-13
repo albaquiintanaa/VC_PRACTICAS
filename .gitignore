@@ -1,10 +1,33 @@
-# Carpeta del dataset
-/dataset_plates/
+# Carpetas a ignorar
+/dataset_plates
+/results/*
+!/results/plates_secuencial/
+/results/plates_secuencial/*
+!/results/plates_secuencial/detecciones.csv
+/reports/comparativa_ocr
+/reports/comparativa_ocr_smoke
+/reports/transcripciones
+/reports
 
-# Pesos de los modelos YOLO
+# Pesos de los modelos YOLO y modelo OCR SmolVM
 *.pt
+/models
 
 # Repo con dependencia descargada
 /RT-DETR/
 yolo_manager_1_1.py
 video_test.mp4
+
+# Ficheros
+reports/auditoria_etiquetas_dataset.json
+reports/auditoria_etiquetas_dataset_incidencias.csv
+uv.lock
+
+# Caché de Python
+__pycache__/
+test_revisar_recortes.py
+test_seleccion_ocr.py
+revisar_recortes.py
+images/readme/capturas.json
+images/readme/video_anotado_24s.jpg
+images/readme/video_anotado_80s.jpg
