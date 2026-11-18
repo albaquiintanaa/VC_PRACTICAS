@@ -1,0 +1,25 @@
+# Entornos y Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ipynb_checkpoints/
+*.egg-info/
+build/
+dist/
+
+# Credenciales y configuración local
+.env
+.env.*
+!.env.example
+.DS_Store
+Thumbs.db
+
+# Recursos personales y pesos locales
+data/videos/*
+!data/videos/.gitkeep
+models/pretrained/*
+!models/pretrained/.gitkeep
+outputs/**
+videos/video_reference.mp4
