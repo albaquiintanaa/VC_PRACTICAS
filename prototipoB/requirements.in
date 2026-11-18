@@ -1,0 +1,5 @@
+# Dependencias directas del morphing. Un solo proveedor de cv2.
+mediapipe
+opencv-contrib-python
+numpy
+scipy
