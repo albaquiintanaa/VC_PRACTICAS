@@ -19,7 +19,7 @@ Prácticas de la asignatura "_Visión por Computador_"
 | `02` | Funciones básicas de OpenCV | [![P2](https://img.shields.io/badge/Ver-P2-2ea44f?style=flat-square&logo=github)](https://github.com/albaquiintanaa/VC_PRACTICAS/tree/P2) |
 | `03` | Detección y reconocimiento de formas | [![P3](https://img.shields.io/badge/Ver-P3-2ea44f?style=flat-square&logo=github)](https://github.com/albaquiintanaa/VC_PRACTICAS/tree/P3) |
 | `04` | Detección de vehículos y matrículas | [![P4](https://img.shields.io/badge/Ver-P4-2ea44f?style=flat-square&logo=github)](https://github.com/albaquiintanaa/VC_PRACTICAS/tree/P4) |
-| `05` | Próximamente | ![Pendiente](https://img.shields.io/badge/Estado-Pendiente-lightgrey?style=flat-square) |
+| `05` | Biometría: Detección y caracterización de caras | [![P5](https://img.shields.io/badge/Ver-P5-2ea44f?style=flat-square&logo=github)](https://github.com/albaquiintanaa/VC_PRACTICAS/tree/P5) |
 | `06` | Próximamente | ![Pendiente](https://img.shields.io/badge/Estado-Pendiente-lightgrey?style=flat-square) |
 | `07` | Próximamente | ![Pendiente](https://img.shields.io/badge/Estado-Pendiente-lightgrey?style=flat-square) |
 
