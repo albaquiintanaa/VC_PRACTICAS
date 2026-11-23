@@ -5,7 +5,7 @@ Práctica de la asignatura **Visión por Computador** dedicada al procesamiento 
 ## 👥 Autores
 
 Este trabajo ha sido realizado por el **`Grupo 27`**: 
-- [Alba Quintana Ramos](https://github.com/albaquiintanaa)
+- [Alba Ramos Quintana](https://github.com/albaquiintanaa)
 - [Néstor Jesús Henríquez Medina](https://github.com/NestorJHM)
 
 ## Contenidos
