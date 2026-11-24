@@ -1,0 +1,49 @@
+{
+ "gesto": "boca_directo",
+ "elegido": "HOG + SVM (girado)",
+ "motivo": "En la grabación de prueba, HOG + SVM (girado) solo dispara en el 1.6 % de los fotogramas con la boca cerrada (3.7 % con la cabeza inclinada) y detecta el 95 % de las aperturas grandes. El modelo elegido por k-fold (HOG + SVM con el recorte sin girar) daba un 21.0 % de falsos disparos (45.7 % con la cabeza inclinada).",
+ "metodos": [
+  {
+   "Método": "HOG + SVM (recto)",
+   "Aperturas grandes detectadas": 0.9747899159663865,
+   "Boca cerrada sin falsos disparos": 0.7903225806451613,
+   "Cabeza inclinada sin falsos disparos": 0.5432098765432098,
+   "ms": null
+  },
+  {
+   "Método": "HOG + SVM (girado)",
+   "Aperturas grandes detectadas": 0.9495798319327731,
+   "Boca cerrada sin falsos disparos": 0.9838709677419355,
+   "Cabeza inclinada sin falsos disparos": 0.962962962962963,
+   "ms": null
+  },
+  {
+   "Método": "LBP + SVM (recto)",
+   "Aperturas grandes detectadas": 0.8823529411764706,
+   "Boca cerrada sin falsos disparos": 0.8333333333333334,
+   "Cabeza inclinada sin falsos disparos": 0.617283950617284,
+   "ms": null
+  },
+  {
+   "Método": "LBP + SVM (girado)",
+   "Aperturas grandes detectadas": 0.8571428571428571,
+   "Boca cerrada sin falsos disparos": 0.9301075268817205,
+   "Cabeza inclinada sin falsos disparos": 0.8395061728395061,
+   "ms": null
+  },
+  {
+   "Método": "CNN (recto)",
+   "Aperturas grandes detectadas": 0.8823529411764706,
+   "Boca cerrada sin falsos disparos": 0.8225806451612903,
+   "Cabeza inclinada sin falsos disparos": 0.5925925925925926,
+   "ms": null
+  },
+  {
+   "Método": "CNN (girado)",
+   "Aperturas grandes detectadas": 0.8739495798319328,
+   "Boca cerrada sin falsos disparos": 0.9408602150537635,
+   "Cabeza inclinada sin falsos disparos": 0.8641975308641976,
+   "ms": null
+  }
+ ]
+}
