@@ -1,0 +1,35 @@
+{
+ "gesto": "ojos",
+ "elegido": "CNN",
+ "motivo": "Es el que mejor generaliza a otra cámara: F1 externo 0.980 con encuadre ajustado frente a 0.721 del siguiente (LBP + SVM), con un F1 en k-fold de 0.943 y 0.9 ms por ojo, suficiente para clasificar los dos ojos en cada fotograma.",
+ "metodos": [
+  {
+   "Método": "Píxeles + KNN",
+   "F1 k-fold": 0.852444038406135,
+   "F1 externo (completo)": null,
+   "F1 externo (ajustado)": null,
+   "ms": null
+  },
+  {
+   "Método": "HOG + SVM",
+   "F1 k-fold": 0.9062779296928649,
+   "F1 externo (completo)": 0.28,
+   "F1 externo (ajustado)": 0.3588039867109635,
+   "ms": 1.2753893332167838
+  },
+  {
+   "Método": "LBP + SVM",
+   "F1 k-fold": 0.9449864264598673,
+   "F1 externo (completo)": 0.6419354838709678,
+   "F1 externo (ajustado)": 0.7209612817089452,
+   "ms": 2.0496546667224416
+  },
+  {
+   "Método": "CNN",
+   "F1 k-fold": 0.9425700279153396,
+   "F1 externo (completo)": 0.9047261815453863,
+   "F1 externo (ajustado)": 0.9797344514325647,
+   "ms": 0.8960033334248388
+  }
+ ]
+}

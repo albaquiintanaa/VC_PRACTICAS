@@ -1,0 +1,37 @@
+{
+ "gesto": "sonrisa",
+ "elegido": "HOG + SVM",
+ "motivo": "Mayor F1 en el k-fold entre los modelos entrenados: 0.939, con 3.3 ms por recorte. Como referencia, MediaPipe mouthSmile obtiene 0.942 y DeepFace happy 0.878 (22 ms por cara).",
+ "metodos": [
+  {
+   "Método": "Píxeles + KNN",
+   "F1 k-fold": 0.9170352186334141,
+   "ms": null
+  },
+  {
+   "Método": "HOG + SVM",
+   "F1 k-fold": 0.9394652584974972,
+   "ms": 3.31474166654516
+  },
+  {
+   "Método": "LBP + SVM",
+   "F1 k-fold": 0.9330639429974068,
+   "ms": 2.8561956666332358
+  },
+  {
+   "Método": "CNN",
+   "F1 k-fold": 0.8914489676501329,
+   "ms": 1.0079700001127396
+  },
+  {
+   "Método": "MediaPipe mouthSmile",
+   "F1 k-fold": 0.9424277955423458,
+   "ms": null
+  },
+  {
+   "Método": "DeepFace happy",
+   "F1 k-fold": 0.8775938380350894,
+   "ms": 22.244849998969585
+  }
+ ]
+}

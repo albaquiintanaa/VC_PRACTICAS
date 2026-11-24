@@ -1,0 +1,37 @@
+{
+ "gesto": "boca",
+ "elegido": "HOG + SVM",
+ "motivo": "Mayor F1 en el k-fold agrupado por persona entre los modelos entrenados: 0.983 (empatado a menos de 0,005 con LBP + SVM, se elige por ser el más rápido), con 2.4 ms por recorte. Como referencia, MediaPipe jawOpen sin entrenar obtiene 0.980.",
+ "metodos": [
+  {
+   "Método": "Píxeles + KNN",
+   "F1 k-fold agrupado": 0.921286305713972,
+   "F1 k-fold al azar": 0.9645753880088941,
+   "ms": null
+  },
+  {
+   "Método": "HOG + SVM",
+   "F1 k-fold agrupado": 0.9829144288347826,
+   "F1 k-fold al azar": 0.9893435500519321,
+   "ms": 2.3630010489198554
+  },
+  {
+   "Método": "LBP + SVM",
+   "F1 k-fold agrupado": 0.9829164639551047,
+   "F1 k-fold al azar": 0.9907822748360262,
+   "ms": 2.433928321571565
+  },
+  {
+   "Método": "CNN",
+   "F1 k-fold agrupado": 0.9035610264223072,
+   "F1 k-fold al azar": null,
+   "ms": 1.0520052447690387
+  },
+  {
+   "Método": "MediaPipe jawOpen",
+   "F1 k-fold agrupado": 0.9795479729261004,
+   "F1 k-fold al azar": null,
+   "ms": null
+  }
+ ]
+}

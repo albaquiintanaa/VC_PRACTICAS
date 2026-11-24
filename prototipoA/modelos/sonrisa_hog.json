@@ -1,0 +1,10 @@
+{
+ "tipo": "hog",
+ "tam": 64,
+ "gris": true,
+ "clases": [
+  "no_sonrie",
+  "sonrie"
+ ],
+ "ecualizar": true
+}

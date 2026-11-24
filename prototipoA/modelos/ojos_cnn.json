@@ -1,0 +1,10 @@
+{
+ "tipo": "cnn",
+ "tam": 24,
+ "gris": true,
+ "clases": [
+  "abierto",
+  "cerrado"
+ ],
+ "ecualizar": true
+}
