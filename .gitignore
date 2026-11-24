@@ -1,3 +1,37 @@
+# Datasets (descargados de fuentes externas, no se suben)
+datasets/
+DatabaseGender59x65/
+
+# Modelos de MediaPipe descargados
+*.task
+
+# Modelos entrenados: solo se suben los 3 que usa el juego
+# (los demás se regeneran con los cuadernos y sus resultados están en resultados/ y figuras/)
+prototipoA/modelos/*
+!prototipoA/modelos/ojos_cnn.*
+!prototipoA/modelos/boca_hog.*
+!prototipoA/modelos/sonrisa_hog.*
+
+# Python / Jupyter
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# Sistema
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# Entorno / editor
+.vscode/
+.env
+
+# Grabaciones de prueba (contienen la cara)
+grabaciones/
+*.mp4
+
+# Récord del juego (local)
+record.txt
 
 # Prototipo B
 # Entornos y Python
