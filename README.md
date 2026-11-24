@@ -158,6 +158,37 @@ Todo está en la carpeta [`prototipoA/`](prototipoA/), y los cuadernos se entreg
 
 </div>
 
+El proceso completo tiene dos partes: en los cuadernos se preparan los datos y se entrenan y eligen los modelos, y en directo esos modelos convierten cada fotograma de la webcam en los controles del juego.
+
+```mermaid
+flowchart TD
+    subgraph E["Entrenamiento (cuadernos)"]
+        A["Datasets públicos: CEW, Drowsiness y GENKI-4K"] --> B["MediaPipe: landmarks de los labios"]
+        B --> C["Recorte de la boca a 64×64"]
+        A --> D["Ojos de CEW a 24×24"]
+        C --> F["Ecualización del histograma"]
+        D --> F
+        F --> G["Píxeles + KNN · HOG + SVM · LBP + SVM · CNN"]
+        G --> H["k-fold agrupado por persona"]
+        H --> I["Test externo de ojos y comparación con MediaPipe y DeepFace"]
+        I --> J["Modelos elegidos: CNN de ojos y HOG + SVM de boca y sonrisa"]
+        J --> K["Prueba en directo: recorte girado de la boca"]
+    end
+    subgraph V["En directo (gestos.py y juego.py)"]
+        L["Fotograma de la webcam"] --> M["MediaPipe: 478 landmarks"]
+        M --> N["Recortes girados de los ojos y la boca"]
+        M --> O["Punta de la nariz"]
+        N --> P["Modelos: probabilidad de cada gesto"]
+        P --> Q["Suavizado, histéresis y tiempos"]
+        O --> Q
+        Q --> R["Controles: mover, disparar, turbo, guiño y bomba"]
+        R --> S["Juego en pygame"]
+    end
+    K --> N
+```
+
+<p align="center"><em>Figura 2. Pipeline del prototipo A: entrenamiento y elección de los modelos en los cuadernos (arriba) y uso en directo en cada fotograma (abajo).</em></p>
+
 ### 2.1. Datos y validación
 
 Cada gesto se entrena con un dataset público, y las clases están balanceadas.
@@ -177,23 +208,23 @@ Cada gesto se entrena con un dataset público, y las clases están balanceadas.
 
 ![Ojos de CEW](prototipoA/figuras/ejemplos_ojos_CEW.png)
 
-<p align="center"><em>Figura 2. Ojos abiertos y cerrados de CEW.</em></p>
+<p align="center"><em>Figura 3. Ojos abiertos y cerrados de CEW.</em></p>
 
 Los **ojos del Drowsiness dataset** son de otras personas y otras cámaras, en color y con un encuadre más amplio. No se usan para entrenar, solo como **test externo**, para saber cómo se comporta el modelo con una cámara que no ha visto.
 
 ![Ojos del test externo](prototipoA/figuras/ejemplos_ojos_kaggle.png)
 
-<p align="center"><em>Figura 3. Ojos abiertos y cerrados del Drowsiness dataset, usados como test externo.</em></p>
+<p align="center"><em>Figura 4. Ojos abiertos y cerrados del Drowsiness dataset, usados como test externo.</em></p>
 
 Los **bostezos del Drowsiness dataset** (fotogramas de conductores) y **GENKI-4K** (caras de internet con y sin sonrisa) traen la cara completa, pero en el juego el modelo solo verá la boca. Por eso recortamos la boca de cada foto con los *landmarks* de los labios de MediaPipe (un cuadrado de 64×64 con un 40 % de margen), igual que se recorta después la webcam.
 
 ![Recortes de boca abierta y cerrada](prototipoA/figuras/ejemplos_boca_recortes.png)
 
-<p align="center"><em>Figura 4. Recortes de boca abierta (bostezo) y cerrada obtenidos con MediaPipe a partir del Drowsiness dataset.</em></p>
+<p align="center"><em>Figura 5. Recortes de boca abierta (bostezo) y cerrada obtenidos con MediaPipe a partir del Drowsiness dataset.</em></p>
 
 ![Recortes de sonrisa](prototipoA/figuras/ejemplos_sonrisa_recortes.png)
 
-<p align="center"><em>Figura 5. Recortes de boca con y sin sonrisa obtenidos con MediaPipe a partir de GENKI-4K.</em></p>
+<p align="center"><em>Figura 6. Recortes de boca con y sin sonrisa obtenidos con MediaPipe a partir de GENKI-4K.</em></p>
 
 Todas las imágenes se **ecualizan** antes de entrar al modelo, para que afecten menos las diferencias de luz entre cámaras.
 
@@ -293,7 +324,13 @@ También vimos que el **encuadre** importa: recortando el ojo como en CEW (centr
 
 ![Comparación de métodos para los ojos](prototipoA/figuras/ojos_resumen.png)
 
-<p align="center"><em>Figura 6. F1 en k-fold y en el test externo (con el encuadre completo y ajustado) y latencia por ojo. La estrella marca el modelo elegido: la CNN.</em></p>
+<p align="center"><em>Figura 7. F1 en k-fold y en el test externo (con el encuadre completo y ajustado) y latencia por ojo. La estrella marca el modelo elegido: la CNN.</em></p>
+
+La matriz de confusión del test externo muestra por qué HOG se hunde: de los 726 ojos cerrados de otra cámara solo reconoce 162 y da **564 por abiertos**, así que en el juego casi nunca habría bombas ni guiños. LBP se equivoca en los dos sentidos, y la CNN solo falla 25 ojos cerrados y 4 abiertos.
+
+![Matrices de confusión del test externo de ojos](prototipoA/figuras/ojos_externo_confusion.png)
+
+<p align="center"><em>Figura 8. Matrices de confusión en el test externo (Drowsiness dataset, encuadre ajustado al 80 %). Filas: clase real; columnas: clase predicha.</em></p>
 
 
 ### Boca y Sonrisa
@@ -316,6 +353,12 @@ Para usar esas puntuaciones como clasificador, en cada fold se elige el umbral c
 
 - **Los descriptores clásicos ganan a la CNN**: la boca abierta y la sonrisa se ven muy bien en los bordes, y con 1.100-3.200 imágenes por fold una red entrenada desde cero aprende peor que una SVM con buenos descriptores. En la boca, HOG y LBP empatan y elegimos HOG por ser algo más rápido.
 - **MediaPipe iguala a nuestros mejores modelos sin entrenar nada.** El juego usa los nuestros porque la práctica pide un modelo propio.
+
+En la sonrisa, la matriz de confusión del k-fold muestra el problema de la CNN: da **342 caras sin sonrisa como sonrientes**, más del triple que HOG + SVM (103). En el juego, eso sería el turbo activándose sin querer.
+
+![Matrices de confusión del k-fold de sonrisa](prototipoA/figuras/sonrisa_kfold_confusion.png)
+
+<p align="center"><em>Figura 9. Matrices de confusión de los cuatro métodos en el k-fold de sonrisa, sumando los 5 folds. Filas: clase real; columnas: clase predicha.</em></p>
 
 ---
 
@@ -350,7 +393,7 @@ def apertura_labios(landmarks, w, h):
 
 ![Prueba en directo del modelo de boca](prototipoA/figuras/boca_prueba_directo_serie.png)
 
-<p align="center"><em>Figura 7. Probabilidad de boca abierta de cada modelo (arriba), apertura de los labios que hace de etiqueta (centro) e inclinación de la cabeza (abajo). A partir del segundo 25 se inclina la cabeza: el modelo de partida (línea gris de puntos) dispara solo, y HOG + SVM con el recorte girado no.</em></p>
+<p align="center"><em>Figura 10. Probabilidad de boca abierta de cada modelo (arriba), apertura de los labios que hace de etiqueta (centro) e inclinación de la cabeza (abajo). A partir del segundo 25 se inclina la cabeza: el modelo de partida (línea gris de puntos) dispara solo, y HOG + SVM con el recorte girado no.</em></p>
 
 **El problema no era el modelo, sino el recorte.** Los datasets son casi siempre caras rectas; **girando el recorte** para que la línea entre las comisuras quede horizontal, los falsos disparos bajan en todos los modelos, y HOG + SVM sigue siendo el mejor. El giro se hace con una sola transformación afín (`recorta_boca` en `gestos.py`):
 
@@ -384,7 +427,7 @@ Además de los resultados del [apartado 2.2](#22-modelos-entrenados), comparamos
 
 ![Facilidad de uso y coste en la sonrisa](prototipoA/figuras/sonrisa_facilidad.png)
 
-<p align="center"><em>Figura 8. Tiempo de entrenamiento por fold, tiempo de predicción y tamaño de cada modelo de sonrisa, el dataset más grande.</em></p>
+<p align="center"><em>Figura 11. Tiempo de entrenamiento por fold, tiempo de predicción y tamaño de cada modelo de sonrisa, el dataset más grande.</em></p>
 
 - **Al predecir, la CNN es siempre la más rápida y la más ligera.** Para lograrlo fue clave compilarla con `tf.function`: llamando a Keras directamente tardaba unos 25 ms por imagen (`ModeloGesto` en `utilidades_gestos.py`):
 
@@ -420,7 +463,7 @@ feliz_df[i] = an[0]['emotion']['happy'] / 100                             # prob
 
 ![Comparación de métodos para la sonrisa](prototipoA/figuras/sonrisa_resumen.png)
 
-<p align="center"><em>Figura 9. F1 en k-fold de los modelos de sonrisa y de las referencias de MediaPipe y DeepFace, y tiempo por imagen.</em></p>
+<p align="center"><em>Figura 12. F1 en k-fold de los modelos de sonrisa y de las referencias de MediaPipe y DeepFace, y tiempo por imagen.</em></p>
 
 - **DeepFace queda por detrás** de nuestro modelo (0,878 frente a 0,939) y es **unas 7 veces más lento**, porque primero tiene que detectar la cara.
 - **Estima una emoción, no un gesto.** *Happy* no es exactamente lo mismo que sonreír: DeepFace da casi 0 a bastantes sonrisas leves o de compromiso.
@@ -482,7 +525,7 @@ Ejecutado solo, `gestos.py` abre una **ventana de prueba** que muestra qué ve c
 
 ![Ventana de prueba de gestos.py](prototipoA/figuras/gestos_ventana.png)
 
-<p align="center"><em>Figura 10. Ventana de prueba de <code>gestos.py</code> sobre un fotograma del Drowsiness dataset. A la izquierda, los landmarks (tecla L), con los ojos en verde y los labios en rojo, y las cajas de los recortes; a la derecha, los recortes que recibe cada modelo, la probabilidad de cada gesto (en verde si está activo) y el control resultante: con la boca abierta, DISPARO. Al ser una imagen y no la webcam, el valor de FPS es fijo.</em></p>
+<p align="center"><em>Figura 13. Ventana de prueba de <code>gestos.py</code> sobre un fotograma del Drowsiness dataset. A la izquierda, los landmarks (tecla L), con los ojos en verde y los labios en rojo, y las cajas de los recortes; a la derecha, los recortes que recibe cada modelo, la probabilidad de cada gesto (en verde si está activo) y el control resultante: con la boca abierta, DISPARO. Al ser una imagen y no la webcam, el valor de FPS es fijo.</em></p>
 
 [`juego.py`](prototipoA/juego.py) está hecho con **pygame**. Los gráficos se dibujan con primitivas y los sonidos y la música se generan con NumPy, sin imágenes ni sonidos de terceros. 
 
@@ -496,7 +539,7 @@ La cámara y los modelos van en un **hilo aparte**, para que el juego vaya a 60 
 
 </div>
 
-<p align="center"><em>Figura 11. Menú con los controles (la partida empieza manteniendo la boca abierta) y carga de la bomba: con los ojos cerrados el tiempo se congela y el círculo muestra hasta dónde llegará la explosión.</em></p>
+<p align="center"><em>Figura 14. Menú con los controles (la partida empieza manteniendo la boca abierta) y carga de la bomba: con los ojos cerrados el tiempo se congela y el círculo muestra hasta dónde llegará la explosión.</em></p>
 
 ### 2.7. Limitaciones
 
