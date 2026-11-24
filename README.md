@@ -1,215 +1,545 @@
-## Práctica 5. Biometría: Detección y caracterización de caras
+# Práctica 5 - Biometría: detección y caracterización de caras
 
-### Contenidos
+Práctica de la asignatura **Visión por Computador** dedicada a detectar caras, localizar sus elementos mediante *landmarks* y extraer información del rostro para provocar *reacciones*. Se proponen dos prototipos de temática libre: uno de ellos debe incluir un modelo biométrico **entrenado por nosotros**, con el proceso de entrenamiento, la elección del dataset y la discusión de los resultados, y el otro es completamente libre. 
 
-[Aspectos cubiertos](#51-aspectos-cubiertos)
-[Conjunto de datos](#conjunto-de-datos)  
-[Análisis facial](#análisis-facial)  
-[Tarea](#tarea)
+* Como extras, se comparan modelos clásicos y redes neuronales (resultados, facilidad de uso y rapidez) y se comparan los modelos entrenados con la función `analyze` de DeepFace.
 
+## 👥 Autores
 
-### Detección de caras
+Este trabajo ha sido realizado por el **`Grupo 27`**:
+- [Alba Ramos Quintana](https://github.com/albaquiintanaa)
+- [Néstor Jesús Henríquez Medina](https://github.com/NestorJHM)
 
-Dentro de la biometría, una de las fuentes más importantes, sino la que más, es el rostro del individuo. Por ello, para esta práctica se han preparado varios demostradores de detectores faciales que nos permitan detectarla y posteriormente trabajar con ella. El primero de ellos, [*VC_P5_detectores.ipynb*](VC_P5_detectores.ipynb), integra tres variantes que buscan el rostro mayor de la imagen:
+## Resultados
 
-- Detector de Viola y Jones [Viola04-ijcv]. La detección de caras se incorpora en OpenCV desde la implementación de Rainer Lienhart [Lienhart02] del conocido, y hoy añejo, detector.
-- Detector basado en Convolutional Neural Networks (CNNs) [Feng21]
-- Detector Multi-task Cascaded Convolutional Networks (MTCNN) [Zhang16]
+<div align="center">
 
-Como primer paso, son necesarias algunas instalaciones de paquetes. Partiendo del *environment* *VC_P1* creado en la primera práctica, para ejecutar los notebooks se ha necesitado instalar los siguientes paquetes:
+| Prototipo | Demostración | Descripción |
+|---|---|---|
+| **A** - [GESTO GALÁCTICO](#2-prototipo-a-gesto-galáctico) | *GIF pendiente* <!-- <img src="prototipoA/figuras/demo_prototipoA.gif" width="420"> --> | Juego de naves controlado con la cara. Los gestos los detectan tres modelos entrenados por nosotros. |
+| **B** - [Prototipo B](#3-prototipo-b) | *GIF pendiente* | <!-- Descripción del prototipo B. --> |
 
+</div>
 
-<!-- Problemas con ejemplo deepface_kfold tensorflow 2.5.0?-->  
-```
+---
+
+## Contenidos
+
+[1. Entorno y puesta en marcha](#1-entorno-y-puesta-en-marcha)\
+&emsp;[1.1. Dependencias y GPU](#11-dependencias-y-gpu)\
+&emsp;[1.2. Instalación del entorno](#12-instalación-del-entorno)\
+&emsp;[1.3. Ejecución del prototipo A](#13-ejecución-del-prototipo-a)\
+&emsp;[1.4. Ejecución del prototipo B](#14-ejecución-del-prototipo-b)\
+&emsp;[1.5. Archivos que no se incluyen en el repositorio](#15-archivos-que-no-se-incluyen-en-el-repositorio)\
+[2. Prototipo A: GESTO GALÁCTICO](#2-prototipo-a-gesto-galáctico)\
+&emsp;[2.1. Datos y validación](#21-datos-y-validación)\
+&emsp;[2.2. Modelos entrenados](#22-modelos-entrenados)\
+&emsp;[2.3. Prueba en directo con la webcam](#23-prueba-en-directo-con-la-webcam)\
+&emsp;[2.4. Extra: modelos clásicos frente a redes neuronales](#24-extra-modelos-clásicos-frente-a-redes-neuronales)\
+&emsp;[2.5. Extra: comparación con DeepFace](#25-extra-comparación-con-deepface)\
+&emsp;[2.6. Detector de gestos y juego](#26-detector-de-gestos-y-juego)\
+&emsp;[2.7. Limitaciones](#27-limitaciones)\
+[3. Prototipo B](#3-prototipo-b)\
+[4. Referencias](#4-referencias)\
+[5. Nota: uso de IA](#nota-uso-de-ia)
+
+---
+
+## 1. Entorno y puesta en marcha
+
+### 1.1. Dependencias y GPU
+
+El entorno se denomina **`VC_P5`** y emplea Python **3.11.5**, la versión que propone el enunciado:
+
+<div align="center">
+
+| Componente | Versión | Función |
+|---|---|---|
+| MediaPipe | 1.2.3 | *Landmarks* faciales y *blendshapes*. |
+| OpenCV | 4.12.0.88 | Cámara, recortes y dibujo. |
+| scikit-learn / scikit-image | 1.9.1 / 0.26.0 | SVM, KNN, k-fold y descriptores HOG y LBP. |
+| TensorFlow / Keras | 2.21.0 / 3.15.1 | CNN. |
+| DeepFace | 0.0.105 | Comparación con `analyze`. |
+| pygame | 2.6.1 | Juego y sonido. |
+
+</div>
+
+Todo se ha ejecutado en la **CPU**, ya que TensorFlow no admite GPU en Windows nativo desde la versión 2.11; con modelos tan pequeños no es un problema.
+
+### 1.2. Instalación del entorno
+
+```powershell
 conda create --name VC_P5 python=3.11.5
 conda activate VC_P5
-pip install matplotlib
-pip install mtcnn
-pip install tensorflow   
-pip install deepface
-pip install tf-keras
-pip install opencv-python==4.12.0.88
+
+python -m pip install "mediapipe==1.2.3" "opencv-python==4.12.0.88" "numpy==2.2.6"
+python -m pip install "tensorflow==2.21.0" "tf-keras==2.21.0" "deepface==0.0.105"
+python -m pip install "scikit-learn==1.9.1" "scikit-image==0.26.0" "pygame==2.6.1" matplotlib joblib ipykernel
+
+python -m ipykernel install --user --name VC_P5 --display-name "VC_P5"
 ```
 
-<!-- He eliminado por completo dlib. Daba varios problemas al instalar y nadie terminaba usandolo. En su lugar, he añadido MediaPipe, que es a lo que se iba todo el mundo igualmente -->
-<!-- Por la experiencia previa, el **paquete dlib suele ser el más problemático**, en ocasiones requiere que se instale la versión *Comunidad* de [*Microsoft C++ Build Tools*](https://visualstudio.microsoft.com/downloads/?q=build+tools). En el **caso de no resolverlo en poco tiempo, sugerir no instalar dlib**, y evitar el ejemplo [*VC_P5_detectores.ipynb*](VC_P5_detectores.ipynb), donde se alterna entre distintos detectores de caras y elementos faciales, y usar los demostradores que no incorpora el detector de dlib: [*VC_P5_VJs.ipynb*](VC_P5_VJs.ipynb) (combinación de detectores de Viola y Jones) y [*VC_P5_VJ_DNN_MTCNN.ipynb*](VC_P5_VJ_DNN_MTCNN.ipynb) (varios detectores, sin los disponbibles en dlib).
+### 1.3. Ejecución del prototipo A
 
+Todo se ejecuta **desde la carpeta `prototipoA`**, con el núcleo **VC_P5**:
 
-Si no hay contratiempos, la ejecución de [*VC_P5_detectores.ipynb*](VC_P5_detectores.ipynb) debería ser posible, todas las dependencias están instaladas, pero falta asegurar que todos los clasificadores están presentes en el directorio local. Al ejecutar debería aparecer un error por un archivo no encontrado. En el repositorio [github](https://github.com/otsedom/otsedom.github.io/blob/main/VC/README.md), se incluyen todos los modelos necesarios con excepción de los modelos de máscaras faciales, más pesados, motivo por el cual se produce error al no disponer de los archivos *shape_predictor_5_face_landmarks.dat* y *shape_predictor_68_face_landmarks.dat*. Por su mencionado tamaño no se han incluido en el repositorio. Para poder ejecutar la demo, deben descargarse desde el enlace proporcionado en el campus virtual (opción aconsejada), o desde el [repositorio de archivos de dlib](http://dlib.net/files/).--> 
+1. Descargar los datasets ([apartado 2.1](#21-datos-y-validación)) en `prototipoA/datasets/`, con una subcarpeta por clase: `ojos_CEW/` y `ojos_kaggle/` (`abierto`, `cerrado`), `boca/` (`abierta`, `cerrada`) y `sonrisa/` (`sonrie`, `no_sonrie`). 
+    - Los ojos cerrados de CEW se renombraron como `cerrado_<foto>_c<cara>_<L|R>.jpg` para poder agruparlos por foto.
+2. Ejecutar `VC_P5_gestos_datasets.ipynb`, que descarga `face_landmarker.task` y prepara los recortes de boca.
+3. Ejecutar los cuadernos de ojos, boca y sonrisa, en cualquier orden. Cada uno guarda sus modelos en `modelos/`, sus gráficas en `figuras/` y sus tablas en `resultados/`.
+4. Jugar con:
 
-
-Como se ha dicho, el notebook [*VC_P5_detectores.ipynb*](VC_P5_detectores.ipynb), integra tres detectores diferentes, el clásico Viola-Jones (también llamado Haar-Cascade), DNN y MTCNN. En primer término la implementación en OpenCV del detector de Viola y Jones [Viola04][Lienhart02] busca caras, en cuyo contenedor intenta localizar los ojos, aplicando la misma arquitectura de detector, pero adaptada al patrón ocular, por medio de los detectores entrenados años atrás en nuestro laboratorio [Castrillon11]. El que llamaremos DNN por su parte, corresponde a una red neuronal muy pequeña, basada en una ResNet10, entrenada para detectar caras. Finalmente, el conocido MTCNN, compuesto de 3 subredes convolucionales: P-Net para obtener posibles rostros, R-Net para rechazar candidatos y O-Net para producir la salida final [Zhang16]. 
-
-
-Pulsando la tecla *d* cambias de detector, y la tecla *e* permite alternar entre la detección con y sin landmarks. Aunque en el ejemplo se muestran pocos landmarks, detectores faciales más recientes, tras detectar el rostro hacen uso de un modelo de sus elementos para encajarlo en la imagen, intentando ajustar para cada cara detectada la máscara de puntos. Esto da como resultado una serie de landmarks como la que se ve en la imagen, siendo esta un ejemplo con 68 landmarks diferentes.
-
-![Careto](images/landmarks.png)  
-*Máscara facial de 68 puntos con numeración*
-
-Dado que las máscaras tienen una numeración que permite el acceso a posiciones concretas, esta información se utiliza para normalizar la imagen (tamaño y orientación) en este ejemplo, pero puede utilizarse para otros fines como muestran las siguientes imágenes.
-
-![Careto](images/facemask2.png)  
-*Máscara sobre el rostro detectado*
-
-
-Un ejemplo final ilustra el uso de [deepface](https://github.com/serengil/deepface) como *wrapper* de distintos detectores. Si bien probablemenmte no optimiza los métodos, permite acceder a distintas propuestas, tanto para detectar, como para analizar rostros (que veremos en la siguiente sección). El cuaderno [*VC_P5_detectores_deepface.ipynb*](VC_P5_detectores_deepface.ipynb), contiene además una celda para detectar con RetinaFace, y otra que permite alternar entre varios. Un detector como RetinaFace, requiere mayores recursos, se recomienda contar con GPU y una instalación de CUDA para su uso.
-
-<!-- Para usuarios linux y Mac, la retroalimentación de éxito que me ha llegado hasta ahora ha siso al instalar CUDA.--> 
-
-
-
-## Mediapipe
-
-[Mediapipe](https://pypi.org/project/mediapipe/) es un framework desarrollado por Google que proporciona acceso a diversas soluciones de aprendizaje automático, sus principales características son que es un proyecto *open source*, y que está concebido para entorno móvil, web y de limitados recursos.
-Te será de utilidad la [documentación](https://ai.google.dev/edge/mediapipe/solutions/guide). En cualquier caso, para su instalación basta con la siguiente línea:
-
-```
-pip install mediapipe
+```powershell
+cd prototipoA
+python juego.py
 ```
 
-En la página de [Mediapipe](https://developers.google.com/mediapipe) se pueden encontrar soluciones para diferentes tasks, como pueden ser transcriptores de audio, embedders de texto o distintas aplicaciones de visión, en las que nos vamos a centrar. Cada task, cuenta con una demo que se puede usar desde el navegador y con las instrucciones para usarla en distintas plataformas. 
+`python gestos.py` abre la **ventana de prueba** del detector. Si no se ve la cámara, hay que cambiar `CAMARA` al principio de `gestos.py`. En el juego, **C** recentra la cabeza, **L** muestra los *landmarks*, **P** pausa y **ESC** sale; también se puede jugar con el teclado.
 
-Para el cuaderno, [*VC_P5_mediapipe.ipynb*](VC_P5_VC_P5_mediapipe.ipynb),  se han adaptado tres de ellas: 1) [Face Landmark Detection](https://developers.google.com/edge/mediapipe/solutions/vision/face_landmarker), 2) [Hand Landmark Detection](https://developers.google.com/edge/mediapipe/solutions/vision/hand_landmarker) y 3) [Pose Landmarker model](https://developers.google.com/edge/mediapipe/solutions/vision/pose_landmarker). Importante recalcar que en todos los casos **se deberá descargar el modelo correspondiente desde la web**:
+### 1.4. Ejecución del prototipo B
 
+<!-- Puesta en marcha del prototipo B. -->
 
+### 1.5. Archivos que no se incluyen en el repositorio
 
-## Análisis facial
+El fichero `.gitignore` excluye los archivos grandes o que se pueden volver a generar o descargar:
 
-En esta sección se muestran varias opciones para la clasificación supervisada del rostro detectado. Como ejemplo ilustrativo, se hace uso de un conjunto de datos para la la clasificación del sexo aparente del individuo, en concreto **DatabaseGender59x65**, que puede **descargarse desde el campus virtual**. Tras descomprimir, observarás que contiene dos carpetas,  se asume un problema de dos clases: femenino y masculino.
+<div align="center">
 
+| Qué | Rutas | Cómo conseguirlo |
+|---|---|---|
+| Datasets | `prototipoA/datasets/` | Enlaces en el [apartado 2.1](#21-datos-y-validación). |
+| Modelo de MediaPipe | `prototipoA/face_landmarker.task` | Lo descarga `VC_P5_gestos_datasets.ipynb`. |
+| Modelos que no usa el juego | `prototipoA/modelos/` salvo `ojos_cnn`, `boca_hog` y `sonrisa_hog` | Se regeneran con los cuadernos; sus resultados están en `resultados/` y `figuras/`. |
+| Grabaciones de prueba | `prototipoA/grabaciones/`, `*.mp4` | Se graban con la tecla R de `gestos.py`. |
+| Récord del juego | `prototipoA/record.txt` | Lo crea el juego. |
 
-### Autocaras
+</div>
 
-La primera de las demos está contenida en el archivo [*VC_P5_eigenfaces.ipynb*](VC_P5_eigenfaces.ipynb). Antes de lanzarla, debes modificar la ruta del conjunto de datos, para ajustarla a tu máquina. Al lanzarlo, a modo de resumen realiza las siguientes acciones:
+---
 
-- Antes de nada, modifica la ruta especificada en el código en la variable *folder* para adaptarla a tu equipo
-- Carga el conjunto de datos sin aplicar ningún tipo de recorte, cada imagen se recompone como vector, obteniendo la matriz *X* con todas las muestras, y la matriz *Y* con sus etiquetas numéricas
-- Visualiza la primera muestra de cada clase y estadísticas del conjunto de datos
-- De forma aleatoria se divide en conjunto de datos en entrenamiento y test usando *train_test_split*, es un *hold-out* 70/30.
-- A continuación se realizan varios experimentos de clasificación:
-  - Utiliza el valor de los píxeles como vector de características, clasificando por mayoría entre los k vecinos más cercanos (k=5 en el código)
-  - Realiza el análisis de componentes principales del conjunto de entrenamiento, tomando las 150 primeras como vector de características, probando dos esquemas de clasificación:
-    - por mayoría entre los k vecinos más cercanos (KNN) (k=5 en el código)
-    - utilizando una máquina de vectores soporte (SVM)
-  - Realiza el análisis de componentes principales del conjunto de entrenamiento, tomando las componentes que cubran el 95% de la varianza del conjunto. De nuevo prueba dos esquemas de clasificación:
-    - por mayoría KNN (k=5 en el código)
-    - utilizando una SVM
+## 2. Prototipo A: GESTO GALÁCTICO
 
+**GESTO GALÁCTICO** es un videojuego de naves que se maneja solo con la cara. MediaPipe localiza los *landmarks* del rostro y, a partir de ellos, recortamos los ojos y la boca y se los pasamos a **tres modelos entrenados por nosotros**:
 
-![PCA](images/pca.png)  
-*Caras principales*
+<div align="center">
 
-Antes de la ejecución, es probable que requieras añadir los paquetes de scikit-learn y scikit-image al *environment*. Estas dos librerías, especialmente la primera, son ampliamente usadas en el mundo del aprendizaje automático, contienen varios modelos clásicos para usarlos de forma muy sencilla y cuentan con una muy buena [documentación](https://scikit-learn.org/stable/). 
+| Gesto | Cómo se detecta | Acción en el juego |
+|---|---|---|
+| Mover la cabeza | Desplazamiento de la punta de la nariz (landmark 1) | Mover la nave |
+| Abrir la boca | **HOG + SVM** (boca abierta / cerrada) | Disparar en ráfaga |
+| Sonreír | **HOG + SVM** (sonríe / no sonríe) | Turbo: todo va más rápido y los puntos valen el doble |
+| Guiñar un ojo | **CNN** (ojo abierto / cerrado) con un solo ojo cerrado | Esquive rápido hacia ese lado |
+| Cerrar los ojos más de 0,6 s | La misma CNN con un filtro de tiempo | El tiempo se congela y se carga una bomba que explota al abrirlos |
 
+</div>
+
+En el último gesto se tiene en cuenta que al parpadear los ojos se cierran solos, así que el programa mide **cuánto tiempo** están cerrados y solo carga la bomba si pasan de 0,6 s. 
+
+* Y como con los ojos cerrados no se ve la pantalla, mientras se carga la bomba el tiempo se detiene y te avisa un sonido.
+
+![Partida de GESTO GALÁCTICO](prototipoA/figuras/juego_partida.png)
+
+<p align="center"><em>Figura 1. Partida con el turbo activado (sonrisa): la nave dispara a los asteroides, la estrella amarilla da puntos extra y la barra inferior indica que la bomba está lista.</em></p>
+
+Todo está en la carpeta [`prototipoA/`](prototipoA/), y los cuadernos se entregan **ejecutados con sus salidas**:
+
+<div align="center">
+
+| Archivo | Contenido |
+|---|---|
+| [`VC_P5_gestos_datasets.ipynb`](prototipoA/VC_P5_gestos_datasets.ipynb) | Revisión de los datasets y recorte de las bocas con MediaPipe. |
+| [`VC_P5_gestos_ojos.ipynb`](prototipoA/VC_P5_gestos_ojos.ipynb), [`_boca`](prototipoA/VC_P5_gestos_boca.ipynb), [`_sonrisa`](prototipoA/VC_P5_gestos_sonrisa.ipynb) | Entrenamiento, comparación y elección de cada modelo. |
+| [`VC_P5_gestos_prueba_directo.ipynb`](prototipoA/VC_P5_gestos_prueba_directo.ipynb) | Prueba del modelo de boca con una grabación de la webcam. |
+| [`utilidades_gestos.py`](prototipoA/utilidades_gestos.py) | Funciones comunes: carga, descriptores, modelos, k-fold agrupado y guardado. |
+| [`gestos.py`](prototipoA/gestos.py) | Detector de gestos en directo (también funciona solo, como ventana de prueba). |
+| [`juego.py`](prototipoA/juego.py), [`sonidos_juego.py`](prototipoA/sonidos_juego.py) | El juego y sus sonidos, generados por síntesis. |
+| `modelos/`, `figuras/`, `resultados/` | Los tres modelos del juego, las gráficas y las tablas de resultados. |
+
+</div>
+
+### 2.1. Datos y validación
+
+Cada gesto se entrena con un dataset público, y las clases están balanceadas.
+
+<div align="center">
+
+| Gesto | Dataset | Imágenes |
+|---|---|---:|
+| Ojo abierto / cerrado | [CEW](https://parnec.nuaa.edu.cn/_upload/tpl/02/db/731/template731/pages/xtan/ClosedEyeDatabases.html), recortes de ojo de 24×24 en gris | 2.462 / 2.384 |
+| Ojo abierto / cerrado (**test externo**) | [Drowsiness dataset](https://www.kaggle.com/datasets/dheerajperumandla/drowsiness-dataset), clases *Open* / *Closed* | 726 / 726 |
+| Boca abierta / cerrada | [Drowsiness dataset](https://www.kaggle.com/datasets/dheerajperumandla/drowsiness-dataset), clases *yawn* / *no_yawn* | 709 / 720 |
+| Sonrisa / no sonrisa | [GENKI-4K](https://mplab.ucsd.edu/398) | 2.139 / 1.817 |
+
+</div>
+
+**CEW** (*Closed Eyes in the Wild*) trae ojos ya recortados a 24×24 en gris, de caras en condiciones reales (distintas luces, posturas y personas). Con él se entrena el modelo de ojos.
+
+![Ojos de CEW](prototipoA/figuras/ejemplos_ojos_CEW.png)
+
+<p align="center"><em>Figura 2. Ojos abiertos y cerrados de CEW.</em></p>
+
+Los **ojos del Drowsiness dataset** son de otras personas y otras cámaras, en color y con un encuadre más amplio. No se usan para entrenar, solo como **test externo**, para saber cómo se comporta el modelo con una cámara que no ha visto.
+
+![Ojos del test externo](prototipoA/figuras/ejemplos_ojos_kaggle.png)
+
+<p align="center"><em>Figura 3. Ojos abiertos y cerrados del Drowsiness dataset, usados como test externo.</em></p>
+
+Los **bostezos del Drowsiness dataset** (fotogramas de conductores) y **GENKI-4K** (caras de internet con y sin sonrisa) traen la cara completa, pero en el juego el modelo solo verá la boca. Por eso recortamos la boca de cada foto con los *landmarks* de los labios de MediaPipe (un cuadrado de 64×64 con un 40 % de margen), igual que se recorta después la webcam.
+
+![Recortes de boca abierta y cerrada](prototipoA/figuras/ejemplos_boca_recortes.png)
+
+<p align="center"><em>Figura 4. Recortes de boca abierta (bostezo) y cerrada obtenidos con MediaPipe a partir del Drowsiness dataset.</em></p>
+
+![Recortes de sonrisa](prototipoA/figuras/ejemplos_sonrisa_recortes.png)
+
+<p align="center"><em>Figura 5. Recortes de boca con y sin sonrisa obtenidos con MediaPipe a partir de GENKI-4K.</em></p>
+
+Todas las imágenes se **ecualizan** antes de entrar al modelo, para que afecten menos las diferencias de luz entre cámaras.
+
+Los métodos se comparan con una validación cruzada de **5 folds agrupada por persona** (`StratifiedGroupKFold`): si fotos de la misma persona caen unas en entrenamiento y otras en test, el modelo puede acertar porque "reconoce" a la persona y el resultado sale demasiado optimista.
+
+- En **CEW**, el grupo sale del nombre del archivo, para que el ojo izquierdo y el derecho de una foto vayan juntos.
+- En **boca**, el dataset son fotogramas de vídeos de conductores y no dice quién es quién. Agrupamos los fotogramas por **parecido visual** (persona, coche y fondo) con *clustering* jerárquico y salen 112 grupos.
+- En **GENKI-4K** casi todas las personas son distintas; el mismo *clustering*, con un umbral muy estricto, junta solo las 4 parejas de fotos casi idénticas.
+
+Así se forman los grupos de la boca y se usan después en el k-fold (`VC_P5_gestos_boca.ipynb` y `utilidades_gestos.py`):
+
+```python
+# Cada fotograma completo se reduce a una miniatura de 32×24, suavizada y normalizada
+mini = cv2.GaussianBlur(cv2.resize(img, (32, 24), interpolation=cv2.INTER_AREA).astype(np.float32), (3, 3), 0)
+v = mini.ravel()
+miniaturas.append((v - v.mean()) / (v.std() + 1e-6))
+
+# Los fotogramas a menos de 0,15 de distancia coseno quedan en el mismo grupo
+etiquetas_grupo = AgglomerativeClustering(n_clusters=None, distance_threshold=0.15, metric='cosine',
+                                          linkage='average').fit_predict(np.array(miniaturas))
+
+# En el k-fold, todas las imágenes de un grupo van juntas a entrenamiento o a test
+skf = StratifiedGroupKFold(n_splits=k, shuffle=True, random_state=semilla)
+for fold, (tr, te) in enumerate(skf.split(X, y, grupos), start=1):
+    ...
 ```
-pip install scikit-learn
-pip install scikit-image
+
+Para comprobar que importa, repetimos el k-fold de boca repartiendo las imágenes al azar: todos los métodos parecen mejores, sobre todo Píxeles + KNN (+0,043 de F1), que casi "memoriza" a las personas. Por eso todos los resultados que siguen son con el k-fold agrupado.
+
+### 2.2. Modelos entrenados
+
+Para cada gesto comparamos cuatro métodos con las mismas imágenes y los mismos folds:
+
+- **Píxeles + KNN** (k = 5), como referencia mínima.
+- **HOG + SVM**, que describe la orientación de los bordes en cada celda.
+- **LBP + SVM**, que describe la textura comparando cada píxel con sus vecinos.
+- Una **CNN** propia de unos 27.500 parámetros: tres capas convolucionales (16, 32 y 64 filtros), una densa y salida sigmoide, entrenada 30 épocas con **aumento de datos** (volteo, desplazamiento, zoom, brillo y contraste al azar).
+
+En las SVM, `C` y `gamma` se eligen con una búsqueda en rejilla, y el modelo final se calibra (`CalibratedClassifierCV`) para que dé probabilidades, que es lo que usa el juego. Elegimos cada modelo por el **F1** de la clase que provoca la acción (ojo cerrado, boca abierta o sonrisa).
+
+El descriptor LBP sigue la función `lbphist` del cuaderno de la práctica: un histograma de patrones por cada celda de la imagen, concatenados (`utilidades_gestos.py`):
+
+```python
+lbp = local_binary_pattern(img, 8, 1, method='nri_uniform')  # 8 vecinos y radio 1
+n_bins = 59                                                 # patrones distintos con 'nri_uniform'
+ch, cw = h // celdas, w // celdas
+hists = []
+for i in range(celdas):                                     # 3×3 celdas en los ojos y 4×4 en la boca
+    for j in range(celdas):
+        celda = lbp[i * ch:(i + 1) * ch, j * cw:(j + 1) * cw]
+        hist, _ = np.histogram(celda, bins=n_bins, range=(0, n_bins), density=True)
+        hists.append(hist)
+return np.concatenate(hists)
 ```
 
-Tras la ejecución, para todas las variantes se muestran métricas y matriz de confusión. ¿Qué esquema consideras que es mejor?
+Y la CNN es esta red de Keras (`utilidades_gestos.py`):
 
-¿Qué ocurriría si se realiza el mismo proceso sobre una zona recortada de la imagen, por ejemplo te centras en la zona ocular. Comentar que las imágenes tienen un tamaño 59x65, habiendo sido normalizadas para que los ojos anotados/detectados estén en las posiciones (16,17) y (42,17).
-
-
-### Descriptores locales
-
-El segundo demostrador [*VC_P5_eigenfaces_handcrafted_kfold.ipynb*](VC_P5_eigenfaces_handcrafted_kfold.ipynb) diseña un experimento kfold, comparando el uso de autocaras con un par de configuraciones basadas en LBP y HOG.
-A modo de resumen realiza las siguientes acciones:
-
-- De nuevo, recuerda en primer lugar modificar la ruta especificada en el código en la variable *folder* para adaptarla a tu equipo
-- Carga el conjunto de datos sin aplicar ningún tipo de recorte, cada imagen se recompone como vector, obteniendo la matriz *X* con todas las muestras, y la matriz *Y* con sus etiquetas numéricas
-- Se visualizan varias muestras de cada clase y estadísticas del conjunto de datos
-- De forma aleatoria se divide en conjunto de datos en varios subconjuntos usando *StratifiedKFold* para diseñar el kfold
-- Realiza el análisis de componentes principales (PCA) del conjunto de entrenamiento, tomando las componentes que cubran el 95% de la varianza del conjunto
-- Posteriormente aplica los siguientes esquemas de clasificación:
-  - Clasifica con píxeles como características y KNN
-  - Clasifica con componentes PCA como características con KNN
-  - Clasifica con componentes PCA como características con SVM
-  - Clasifica con LBP como características con SVM
-  - Clasifica con HOG como características con SVM
-  - Clasificador aplicado (*stacked*) combinando los respectivos clasificadores SVM
-
-Además de la zona de interés del rostro, como en el ejemplo de la sección previa, la división en celdas para el cálculo de los histogramas HOG y LBP es configurable. Es por ello posible mejorar tasas de rendimiento, en particular si mejoramos los datos proporcionados al clasificador apilado.
-
-¿Te aventuras a probar otras combinaciones de región de interés y descriptores locales?
+```python
+modelo = keras.Sequential([
+    keras.Input(shape=(tam, tam, canales)),
+    *capas_aumento,                          # volteo, desplazamiento, zoom, brillo y contraste (solo al entrenar)
+    layers.Rescaling(1.0 / 255),
+    layers.Conv2D(16, 3, padding='same', activation='relu'),
+    layers.MaxPooling2D(),
+    layers.Conv2D(32, 3, padding='same', activation='relu'),
+    layers.MaxPooling2D(),
+    layers.Conv2D(64, 3, padding='same', activation='relu'),
+    layers.GlobalAveragePooling2D(),
+    layers.Dense(64, activation='relu'),
+    layers.Dropout(0.3),                     # apaga neuronas al azar para que no memorice
+    layers.Dense(1, activation='sigmoid'),   # probabilidad de ojo cerrado, boca abierta o sonrisa
+])
+modelo.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+```
 
 
-### deepface
+### Ojos
 
-La demo contenida en [*VC_P5_deepface_kfold.ipynb*](VC_P5_deepface_kfold.ipynb) es similar a la del apartado previo, plantea un experimento kfold, tomando en este caso como características los *embeddings* proporcionados por uno de los modelos presentes en deepface. En concreto he tomado FaceNet, si bien el código está preparado para escoger otro modelo antes de realizar la carga de datos. Al cargar los datos se obtiene el correspondiente *embedding* que se almacena en *X*, siendo por ello el proceso de carga más lento. En la primera ejecución se descargará el modelo si fuera necesario, siendo almacenado en la carpeta *.deepface*. Tenlo presente si vas justo de disco.
+Además del k-fold sobre CEW, hacemos un **test externo**: entrenamos con todo CEW y evaluamos con los ojos del Drowsiness dataset, de otras personas y otras cámaras.
 
-Posteriormente se lanza el experimento kfold. ¿Qué te parecen los resultados?
-¿Qué ocurre con otros modelos?
+<div align="center">
 
-<!-- Sin embargo, quiero mostrar una demo, [*Demo_BuscaParecidos.py*](Demo_BuscaParecidos.py), que busca parecidos en un conjunto de caras a partir de distancias obtenidas con *embeddings* de FaceNet. Advierto que es una demo compuesta en ratos libres durante sesiones de actividades de divulgación bajo alguna carpa en una plaza, por lo que pueden existir errores.
-Un proceso similar es el que está detrás de [Art selfie](https://artsandculture.google.com/camera/selfie).-->
+| Método | F1 k-fold | F1 externo | ms por ojo |
+|---|---:|---:|---:|
+| Píxeles + KNN | 0,852 | - | - |
+| HOG + SVM | 0,906 | 0,359 | 1,3 |
+| LBP + SVM | **0,945** | 0,721 | 2,0 |
+| **CNN** ★ | 0,943 | **0,980** | 0,9 |
 
-Deepface además de detectar caras, dispone de utilidades para reconocimiento, descripción y estimación de la expresión facial, que puedes ver en su web.
-mencionar utilizades para verificación y reconocimiento de identidad. En ambos casos se le proporciona dos parámetros:
+</div>
 
-- Para verificar, se proporcionan dos imágenes
-- Para reconocer una imagen y la ruta  a la carpeta con la base de datos de identidades registradas.
+Dentro de CEW, LBP y la CNN empatan, pero con otra cámara HOG se hunde y solo la CNN aguanta: **el k-fold, aunque esté bien agrupado, no basta para saber cómo funcionará el modelo con otra cámara**, y la webcam es otra cámara. 
 
-En el último ejemplo, se ilustra brevemente la utilidad de descripción facial a través de la función *analyze* que permite estimar:
+También vimos que el **encuadre** importa: recortando el ojo como en CEW (centrado y ajustado) todos los modelos mejoran, y así lo hacemos en el juego. 
 
-- identidad
-- sexo
-- raza
-- emoción
+* Sin aumento de datos, la CNN baja a 0,948.
 
-En los dos últimos casos proporciona probabilidades de cada clase considerada, además de la ganadora. Un pequeño ejemplo es el incluido en [*VC_P5_deepface_analyze.ipynb*](VC_P5_deepface_analyze.ipynb). Tener presente, que cada modalidad requiere la descarga de modelos en su primera ejecución. 
+![Comparación de métodos para los ojos](prototipoA/figuras/ojos_resumen.png)
 
-
-## Tarea
-
-Tras mostrar opciones para la detección y extracción de información de caras humanas con deepface, la tarea consiste en proponer dos escenarios de aplicación y desarrollar dos prototipos de temática libre que provoquen *reacciones* a partir de la información extraída del rostro. Uno de los prototipos deberá incluir el uso de algún modelo entrenado por ustedes para la extracción de información biométrica, similar al ejemplo del género planteado durante la práctica pero con diferente aplicación (emociones, raza, edad...). El otro es de temática completamente libre. Se valorará el correcto uso de los detectores y los landmarks, la robustez del prototipo, el proceso de entrenamiento del modelo biométrico (incluyendo la selección y adecuación del dataset y la discusión de los resultados) y la complejidad del modelo entrenado.
-
-Los detectores proporcionan información del rostro, y de sus elementos faciales. Ideas inmediatas pueden ser filtros, aunque no hay limitaciones en este sentido. La entrega debe venir acompañada de un gif animado o vídeo de un máximo de 30 segundos con momentos seleccionados de las propuestas. Las propuestas se utilizarán para una posterior votación y elección de las mejores entre el grupo. Se dejan algunos ejemplos más adelante:
-
-Como extras se proponen:
-
-- El entrenamiento de modelos clásicos y redes neuronales para realizar una comparativa entre ellos, no solo a nivel de resultados, sino de facilidad de uso y rapidez de inferencia, etc.
-
-- Comparar el rendimiento de los modelos entrenados con la función analyze de deepface.
-
-![AJ](images/AlejandroJoaquin2324.gif)  
-*Alejandro y Joaquín*
-
-![DI](images/AsmaeJavier2526.gif)  
-*Asmae y Javier*
-
-![DJ](images/DanielJorge2324.gif)  
-*Daniel y Jorge*
+<p align="center"><em>Figura 6. F1 en k-fold y en el test externo (con el encuadre completo y ajustado) y latencia por ojo. La estrella marca el modelo elegido: la CNN.</em></p>
 
 
+### Boca y Sonrisa
 
-Recomendar también propuestas como:
+Aquí también comparamos con lo que ya calcula MediaPipe junto a los *landmarks*: `jawOpen` para la boca y la media de `mouthSmileLeft` y `mouthSmileRight` para la sonrisa. 
 
-<!--Además de la demo mostrada de parecidos,
-recomendar la lectura de [Working with Faces](https://kcimc.medium.com/working-with-faces-e63a86391a93) por [Kyle McDonald](https://kylemcdonald.net), y ver propuestas como:-->
+Para usar esas puntuaciones como clasificador, en cada fold se elige el umbral con mejor F1 en entrenamiento.
 
-- [Sharing Faces](https://vimeo.com/96549043) de [Kyle McDonald](https://kylemcdonald.net)
-- [Más Que la Cara](https://zachlieberman.medium.com/más-que-la-cara-overview-48331a0202c0) de Zach Lieberman
-- [Art selfie](https://artsandculture.google.com/camera/selfie)
+<div align="center">
 
+| Método | F1 boca | F1 sonrisa | ms por recorte |
+|---|---:|---:|---:|
+| Píxeles + KNN | 0,921 | 0,917 | - |
+| **HOG + SVM** ★ | **0,983** | **0,939** | 2,4 / 3,3 |
+| LBP + SVM | 0,983 | 0,933 | 2,4 / 2,9 |
+| CNN (en color) | 0,904 | 0,891 | 1,1 / 1,0 |
+| MediaPipe (sin entrenar) | 0,980 | 0,942 | - |
 
+</div>
 
+- **Los descriptores clásicos ganan a la CNN**: la boca abierta y la sonrisa se ven muy bien en los bordes, y con 1.100-3.200 imágenes por fold una red entrenada desde cero aprende peor que una SVM con buenos descriptores. En la boca, HOG y LBP empatan y elegimos HOG por ser algo más rápido.
+- **MediaPipe iguala a nuestros mejores modelos sin entrenar nada.** El juego usa los nuestros porque la práctica pide un modelo propio.
 
-<!--
+---
 
-La instalación debida a Zach Lieberman titulada [Más Que la Cara](https://zachlieberman.medium.com/más-que-la-cara-overview-48331a0202c0) puede dar otra fuente de inspiración. La utilidad [FaceOSC de Kyle McDonald](https://vimeo.com/26098366) también sugiere usos.
+> [!IMPORTANT]
+> **Modelos elegidos:** CNN para los ojos (`modelos/ojos_cnn`) y HOG + SVM para la boca y la sonrisa (`modelos/boca_hog` y `modelos/sonrisa_hog`), que usan el mismo recorte de boca.
 
-Tampoco hay limitación sobre el detector concreto a utilizar, acepto la utilización de otras herramientas. En este sentido puede interesarles echar un vistazo a [Mediapipe](https://google.github.io/mediapipe/).-->
+---
 
+### 2.3. Prueba en directo con la webcam
 
-## Referencias
+Al probarlo con la webcam, el modelo de boca disparaba muchas veces **con la boca cerrada**, sobre todo al **inclinar la cabeza**. Para medirlo, hicimos una grabación de prueba, con la tecla R (boca cerrada, abierta, hablando e inclinando la cabeza) y la analizamos en [`VC_P5_gestos_prueba_directo.ipynb`](prototipoA/VC_P5_gestos_prueba_directo.ipynb). 
 
-- [Castrillo11] Modesto Castrillón, Oscar Déniz, Daniel Hernández, and Javier Lorenzo. A comparison of face  and facial feature detectors based on the violajones general object detection framework. Machine Vision and Applications,2011.  
-- [Feng21] Yuantao Feng and Shiqi Yu and Hanyang Peng and Yan-ran Li and Jianguo Zhang. Detect Faces Efficiently: A Survey and Evaluations. IEEE Transactions on Biometrics, Behavior, and Identity Science, 2021
-- [Lienhart02] Rainer Lienhart and Jochen Maydt. An extended set of Haar-like features for rapid object detection. ICIP 2002  
-- [Viola04] Paul Viola and Michael J. Jones. Robust real-time face detection. International Journal of Computer Vision, 2004  
-- [Zhang16] Zhang, K., Zhang, Z., Li, Z., and Qiao, Y. Joint face detection and alignment using multitask cascaded convolutional networks. IEEE Signal Processing Letters, 2016
+Para no etiquetar a mano, cada fotograma se etiqueta con la **apertura de los labios** según los *landmarks*: la distancia entre los puntos 13 y 14 dividida por la anchura de la boca. Por debajo de 0,07 la boca está cerrada y por encima de 0,12 está abierta (`gestos.py`):
 
+```python
+def apertura_labios(landmarks, w, h):
+    p13, p14, p61, p291 = puntos(landmarks, (13, 14, 61, 291), w, h)
+    # Distancia entre el centro de los labios (13-14) dividida por la anchura de la boca (61-291)
+    return float(np.linalg.norm(p13 - p14) / max(np.linalg.norm(p61 - p291), 1e-6))
+```
 
-***
-Bajo licencia de Creative Commons Reconocimiento - No Comercial 4.0 Internacional
+<div align="center">
+
+| Variante | Falsos disparos | … con la cabeza inclinada | Aperturas detectadas |
+|---|---:|---:|---:|
+| HOG + SVM, recorte recto (elegido por k-fold) | 21,0 % | 45,7 % | 97,5 % |
+| **HOG + SVM, recorte girado** ★ | **1,6 %** | **3,7 %** | 95,0 % |
+| LBP + SVM, recorte girado | 7,0 % | 16,0 % | 85,7 % |
+| CNN, recorte girado | 5,9 % | 13,6 % | 87,4 % |
+
+</div>
+
+![Prueba en directo del modelo de boca](prototipoA/figuras/boca_prueba_directo_serie.png)
+
+<p align="center"><em>Figura 7. Probabilidad de boca abierta de cada modelo (arriba), apertura de los labios que hace de etiqueta (centro) e inclinación de la cabeza (abajo). A partir del segundo 25 se inclina la cabeza: el modelo de partida (línea gris de puntos) dispara solo, y HOG + SVM con el recorte girado no.</em></p>
+
+**El problema no era el modelo, sino el recorte.** Los datasets son casi siempre caras rectas; **girando el recorte** para que la línea entre las comisuras quede horizontal, los falsos disparos bajan en todos los modelos, y HOG + SVM sigue siendo el mejor. El giro se hace con una sola transformación afín (`recorta_boca` en `gestos.py`):
+
+```python
+a, b = puntos(landmarks, COMISURAS_BOCA, w, h)                    # comisuras de la boca (61 y 291)
+angulo = float(np.degrees(np.arctan2(b[1] - a[1], b[0] - a[0])))  # inclinación de la boca
+centro = p.mean(axis=0)                                           # centro de los labios
+...
+# Una sola transformación afín gira, escala a tam x tam y centra la boca
+M = cv2.getRotationMatrix2D((float(centro[0]), float(centro[1])), angulo, tam / lado)
+M[:, 2] += np.array([tam / 2, tam / 2]) - centro
+recorte = cv2.warpAffine(img_bgr, M, (tam, tam), flags=cv2.INTER_AREA, borderMode=cv2.BORDER_REPLICATE)
+```
+
+Los ojos se recortan de la misma forma, con sus propias comisuras.
+
+### 2.4. Extra: modelos clásicos frente a redes neuronales
+
+Además de los resultados del [apartado 2.2](#22-modelos-entrenados), comparamos la **facilidad de uso** y la **rapidez** de cada método (tablas completas en `resultados/<gesto>_facilidad.md`):
+
+<div align="center">
+
+| Gesto | Método | Entrenamiento por fold | Predicción por imagen | Tamaño |
+|---|---|---:|---:|---:|
+| Ojos | HOG / LBP + SVM | 10,5 / 19,6 s | 1,3 / 2,0 ms | 4,6 / 8,5 MB |
+| | **CNN** | 12,2 s | **0,9 ms** | **0,39 MB** |
+| Sonrisa | HOG / LBP + SVM | 57,7 / 29,1 s | 3,3 / 2,9 ms | 21,6 / 13,0 MB |
+| | **CNN** | 33,0 s | **1,0 ms** | **0,39 MB** |
+
+</div>
+
+![Facilidad de uso y coste en la sonrisa](prototipoA/figuras/sonrisa_facilidad.png)
+
+<p align="center"><em>Figura 8. Tiempo de entrenamiento por fold, tiempo de predicción y tamaño de cada modelo de sonrisa, el dataset más grande.</em></p>
+
+- **Al predecir, la CNN es siempre la más rápida y la más ligera.** Para lograrlo fue clave compilarla con `tf.function`: llamando a Keras directamente tardaba unos 25 ms por imagen (`ModeloGesto` en `utilidades_gestos.py`):
+
+    ```python
+    # La red se compila una vez; después cada predicción tarda 1-2 ms en lugar de unos 25 ms
+    self._red = tf.function(lambda x: self.modelo(x, training=False),
+                            input_signature=[tf.TensorSpec([None, tam, tam, canales], tf.float32)])
+    ```
+- **El coste de la SVM crece con el dataset**, porque guarda miles de vectores soporte: en la sonrisa tarda casi un minuto por fold y ocupa 21,6 MB. El de la CNN depende sobre todo de las épocas.
+- **Ajuste:** en los métodos clásicos, el descriptor (celdas, orientaciones, radio…) y `C` y `gamma`; en la CNN, la arquitectura, las épocas y el aumento de datos, y depende de TensorFlow. MediaPipe sale "gratis" con los *landmarks*, y DeepFace necesita su propio detector y es el más lento.
+
+Ningún tipo de modelo gana siempre: la CNN es mejor cuando hay que **generalizar a otra cámara** (ojos), y los clásicos cuando el gesto se ve claramente en los bordes y hay pocas imágenes (boca y sonrisa). Por esa razón, el juego combina los dos.
+
+### 2.5. Extra: comparación con DeepFace
+
+Comparamos nuestro modelo de sonrisa con la función `analyze` de DeepFace, que estima la emoción de una cara. Usamos la probabilidad de la emoción *happy* sobre la cara completa de cada foto de GENKI-4K y, como con MediaPipe, en cada fold elegimos el umbral con mejor F1 en entrenamiento y evaluamos con los mismos folds que nuestros modelos (`VC_P5_gestos_sonrisa.ipynb`):
+
+```python
+an = DeepFace.analyze(orig, actions=['emotion'], detector_backend='opencv',  # detecta y recorta la cara
+                      enforce_detection=False, silent=True)
+feliz_df[i] = an[0]['emotion']['happy'] / 100                             # probabilidad de 'happy' (0-1)
+```
+
+<div align="center">
+
+| Método | F1 sonrisa | Tiempo por imagen |
+|---|---:|---:|
+| **HOG + SVM** (nuestro) ★ | **0,939** | 3,3 ms por recorte |
+| MediaPipe `mouthSmile` (sin entrenar) | 0,942 | - |
+| DeepFace `happy` | 0,878 | 22 ms por cara |
+
+</div>
+
+![Comparación de métodos para la sonrisa](prototipoA/figuras/sonrisa_resumen.png)
+
+<p align="center"><em>Figura 9. F1 en k-fold de los modelos de sonrisa y de las referencias de MediaPipe y DeepFace, y tiempo por imagen.</em></p>
+
+- **DeepFace queda por detrás** de nuestro modelo (0,878 frente a 0,939) y es **unas 7 veces más lento**, porque primero tiene que detectar la cara.
+- **Estima una emoción, no un gesto.** *Happy* no es exactamente lo mismo que sonreír: DeepFace da casi 0 a bastantes sonrisas leves o de compromiso.
+- **Depende mucho del recorte.** Pasándole la foto entera sin detectar la cara (`detector_backend='skip'`), su F1 caía a 0,56, casi al azar; con su detector `opencv` sube a 0,878. Su modelo de emociones espera una cara recortada y ajustada.
+
+Para el juego, un modelo pequeño entrenado para el gesto concreto es más preciso y mucho más rápido que un analizador general de emociones.
+
+### 2.6. Detector de gestos y juego
+
+[`gestos.py`](prototipoA/gestos.py) sigue la estructura del cuaderno de MediaPipe de la práctica (`LIVE_STREAM` con `detect_async` y un *callback*). En cada fotograma:
+
+1. MediaPipe localiza los 478 *landmarks*.
+2. Cada ojo y la boca se recortan **girados** según sus comisuras, con una sola transformación afín (`warpAffine`), y se pasan a su modelo.
+3. Las probabilidades se **suavizan** (media móvil) y pasan por una **histéresis**: un gesto se activa por encima de 0,6 y no se desactiva hasta bajar de 0,4, para que un valor cercano a 0,5 no lo encienda y apague sin parar. Al sonreír se entrecierran los ojos, así que mientras se sonríe hace falta 0,85 para dar un ojo por cerrado.
+4. Con los tiempos se separan los gestos de los ojos: los dos cerrados menos de 0,6 s es un **parpadeo**; más de 0,6 s carga la **bomba**, y uno solo cerrado más de 0,2 s es un **guiño**.
+
+En el *callback* de MediaPipe, además del resultado, guardamos la imagen exacta que analizó, para que los recortes coincidan con los puntos aunque la cabeza se mueva:
+
+```python
+def on_result(result, output_image, timestamp_ms):
+    global latest
+    latest = (result, output_image.numpy_view().copy(), timestamp_ms)  # resultado + imagen analizada
+
+options = FaceLandmarkerOptions(
+    base_options=BaseOptions(model_asset_path=MODELO_FACE),
+    running_mode=VisionRunningMode.LIVE_STREAM,
+    num_faces=1,
+    result_callback=on_result,
+)
+...
+landmarker.detect_async(mp_image, int(time.time() * 1000))
+```
+
+Y esta es la parte de `EstadoGestos` que convierte las probabilidades en gestos:
+
+```python
+# Suavizado e histéresis: se activa por encima de 0,6 (0,85 en los ojos al sonreír) y se apaga por debajo de 0,4
+self.p[g] = SUAVIZADO * previo + (1 - SUAVIZADO) * probs[g]
+if self.activo[g] and self.p[g] < UMBRAL_OFF:
+    self.activo[g] = False
+elif not self.activo[g] and self.p[g] > umbral_on:
+    self.activo[g] = True
+
+# Los dos ojos cerrados: al abrirlos se decide si fue un parpadeo o una bomba
+if izq and der:
+    if self.t_ambos is None:
+        self.t_ambos = t                      # empieza a contar el tiempo con los ojos cerrados
+    ...
+elif self.t_ambos is not None:
+    dur = t - self.t_ambos
+    if dur >= T_BOMBA:                        # más de 0,6 s: bomba
+        eventos.append('bomba')
+    else:                                     # menos: parpadeo normal, se ignora
+        eventos.append('parpadeo')
+    self.t_ambos = None
+```
+
+Ejecutado solo, `gestos.py` abre una **ventana de prueba** que muestra qué ve cada modelo:
+
+![Ventana de prueba de gestos.py](prototipoA/figuras/gestos_ventana.png)
+
+<p align="center"><em>Figura 10. Ventana de prueba de <code>gestos.py</code> sobre un fotograma del Drowsiness dataset. A la izquierda, los landmarks (tecla L), con los ojos en verde y los labios en rojo, y las cajas de los recortes; a la derecha, los recortes que recibe cada modelo, la probabilidad de cada gesto (en verde si está activo) y el control resultante: con la boca abierta, DISPARO. Al ser una imagen y no la webcam, el valor de FPS es fijo.</em></p>
+
+[`juego.py`](prototipoA/juego.py) está hecho con **pygame**. Los gráficos se dibujan con primitivas y los sonidos y la música se generan con NumPy, sin imágenes ni sonidos de terceros. 
+
+La cámara y los modelos van en un **hilo aparte**, para que el juego vaya a 60 FPS aunque analizar un fotograma tarde más, y los guiños y la bomba llegan por una **cola** para no perder ninguno. Si se pierde la cara más de 1 s, el juego se pausa, y si falla la cámara se puede seguir con el teclado.
+
+<div align="center">
+
+| Menú | Carga de la bomba |
+|---|---|
+| ![Menú del juego](prototipoA/figuras/juego_menu.png) | ![Carga de la bomba](prototipoA/figuras/juego_bomba.png) |
+
+</div>
+
+<p align="center"><em>Figura 11. Menú con los controles (la partida empieza manteniendo la boca abierta) y carga de la bomba: con los ojos cerrados el tiempo se congela y el círculo muestra hasta dónde llegará la explosión.</em></p>
+
+### 2.7. Limitaciones
+
+- **Bostezos frente a bocas abiertas.** El dataset de boca tiene bostezos; al hablar se detecta un tercio de las aperturas leves. Jugando no se habla, así que hemos priorizado tener pocos falsos disparos con la boca cerrada.
+- **Etiquetas de la prueba en directo.** Salen de una medida geométrica y no de un etiquetado a mano.
+- **Luz y posturas extremas.** Con poca luz o la cara muy girada, MediaPipe pierde los *landmarks* y el juego se pausa.
+
+---
+
+## 3. Prototipo B
+
+<!-- Apartado del prototipo B. -->
+
+---
+
+## 4. Referencias
+
+### Prototipo A
+
+- Material de la [Práctica 5](https://github.com/otsedom/otsedom.github.io/tree/main/VC/P5): [`VC_P5_mediapipe.ipynb`](https://github.com/otsedom/otsedom.github.io/blob/main/VC/P5/VC_P5_mediapipe.ipynb) (bucle de la webcam con *Face Landmarker*), [`VC_P5_eigenfaces_handcrafted_kfold.ipynb`](https://github.com/otsedom/otsedom.github.io/blob/main/VC/P5/VC_P5_eigenfaces_handcrafted_kfold.ipynb) (k-fold, KNN, HOG y LBP por celdas con SVM) y [`VC_P5_deepface_analyze.ipynb`](https://github.com/otsedom/otsedom.github.io/blob/main/VC/P5/VC_P5_deepface_analyze.ipynb) (`DeepFace.analyze`).
+- MediaPipe: [Face Landmarker para Python](https://ai.google.dev/edge/mediapipe/solutions/vision/face_landmarker/python) y [conexiones de Face Mesh](https://github.com/google-ai-edge/mediapipe/blob/master/mediapipe/python/solutions/face_mesh_connections.py) (índices de labios y ojos).
+- OpenCV: [transformaciones geométricas](https://docs.opencv.org/4.x/da/d6e/tutorial_py_geometric_transformations.html), [ecualización del histograma](https://docs.opencv.org/4.x/d5/daf/tutorial_py_histogram_equalization.html) y [vídeo](https://docs.opencv.org/4.x/dd/d43/tutorial_py_video_display.html).
+- scikit-learn: [`StratifiedGroupKFold`](https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.StratifiedGroupKFold.html), [`GridSearchCV`](https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.GridSearchCV.html), [`CalibratedClassifierCV`](https://scikit-learn.org/stable/modules/generated/sklearn.calibration.CalibratedClassifierCV.html) y [*clustering* jerárquico](https://scikit-learn.org/stable/modules/clustering.html#hierarchical-clustering).
+- scikit-image: [`hog` y `local_binary_pattern`](https://scikit-image.org/docs/stable/api/skimage.feature.html).
+- Keras: [capas de aumento de imágenes](https://keras.io/api/layers/preprocessing_layers/image_augmentation/). TensorFlow: [`tf.function`](https://www.tensorflow.org/guide/function).
+- [DeepFace](https://github.com/serengil/deepface).
+- pygame: [documentación](https://www.pygame.org/docs/), [`sndarray`](https://www.pygame.org/docs/ref/sndarray.html) y [`mixer`](https://www.pygame.org/docs/ref/mixer.html). Python: [`threading`](https://docs.python.org/3/library/threading.html) y [`queue`](https://docs.python.org/3/library/queue.html).
+- F. Song, X. Tan, X. Liu y S. Chen (2014). *Eyes Closeness Detection from Still Images with Multi-scale Histograms of Principal Oriented Gradients*. Pattern Recognition. Dataset [CEW](https://parnec.nuaa.edu.cn/_upload/tpl/02/db/731/template731/pages/xtan/ClosedEyeDatabases.html).
+- *The MPLab GENKI Database, GENKI-4K Subset*. [MPLab, UC San Diego](https://mplab.ucsd.edu/398).
+- D. Perumandla. [*Drowsiness dataset*](https://www.kaggle.com/datasets/dheerajperumandla/drowsiness-dataset). Kaggle.
+
+---
+
+## Nota: uso de IA
+
+En la elaboración del prototipo A se ha empleado [Claude](https://claude.ai), de Anthropic, como agente de IA en las siguientes tareas:
+
+* **Preparación de los datasets:** organización de las carpetas por clase, renombrado de los archivos y recorte de las bocas con MediaPipe.
+* **Tablas, gráficas y matrices de confusión:** generación de las figuras y de las tablas de resultados de los cuadernos.
+* **Resúmenes de resultados:** los archivos de `prototipoA/resultados/` (`<gesto>_resumen.md` y `<gesto>_facilidad.md`) y las figuras `figuras/<gesto>_resumen.png`, que recogen de un vistazo la comparación de métodos, el modelo elegido y el motivo, por si se quiere consultar algún resultado sin abrir los cuadernos.
+* **Sonidos del juego:** síntesis de los efectos y la música con NumPy.
+* **Estructuración de este `README.md`.**
+
+Todo el contenido generado ha sido **revisado y comprendido** por los autores antes de incorporarlo a la práctica.
+
+---
