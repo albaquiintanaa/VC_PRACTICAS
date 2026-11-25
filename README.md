@@ -16,7 +16,7 @@ Este trabajo ha sido realizado por el **`Grupo 27`**:
 
 | Prototipo | Demostración | Descripción |
 |---|---|---|
-| **A** - [GESTO GALÁCTICO](#2-prototipo-a-gesto-galáctico) | *GIF pendiente* <!-- <img src="prototipoA/figuras/demo_prototipoA.gif" width="420"> --> | Juego de naves controlado con la cara. Los gestos los detectan tres modelos entrenados por nosotros. |
+| **A** - [GESTO GALÁCTICO](#2-prototipo-a-gesto-galáctico) | <a href="https://youtu.be/0eNo2aBeK-M"><img src="prototipoA/figuras/demo.gif" width="420"></a><br>[▶ Ver vídeo con sonido](https://youtu.be/0eNo2aBeK-M) | Juego de naves controlado con la cara. Los gestos los detectan tres modelos entrenados por nosotros. |
 | **B** - [Prototipo B](#3-prototipo-b) | *GIF pendiente* | <!-- Descripción del prototipo B. --> |
 
 </div>
