@@ -17,7 +17,7 @@ Este trabajo ha sido realizado por el **`Grupo 27`**:
 | Prototipo | Demostración | Descripción |
 |---|---|---|
 | **A** - [GESTO GALÁCTICO](#2-prototipo-a-gesto-galáctico) | <a href="https://youtu.be/0eNo2aBeK-M"><img src="prototipoA/figuras/demo.gif" width="420"></a><br>[▶ Ver vídeo con sonido](https://youtu.be/0eNo2aBeK-M) | Juego de naves controlado con la cara. Los gestos los detectan tres modelos entrenados por nosotros. |
-| **B** - [MORPHING DE CARAS](#3-prototipo-b) | <a href="https://youtu.be/JUoVybd1Fl0"><img src="prototipoB/videos/video_demo.gif" width="420"></a><br>[▶ Ver vídeo con sonido](https://youtu.be/JUoVybd1Fl0) | Morphing de caras controlado con los dedos índice y pulgar de la mano izquierda. |
+| **B** - [MORPHING DE CARAS](#3-prototipo-b-facefusion---morphing-de-caras) | <a href="https://youtu.be/JUoVybd1Fl0"><img src="prototipoB/videos/video_demo.gif" width="420"></a><br>[▶ Ver vídeo con sonido](https://youtu.be/JUoVybd1Fl0) | Morphing de caras controlado con los dedos índice y pulgar de la mano izquierda. |
 
 </div>
 
@@ -39,7 +39,7 @@ Este trabajo ha sido realizado por el **`Grupo 27`**:
 &emsp;[2.5. Extra: comparación con DeepFace](#25-extra-comparación-con-deepface)\
 &emsp;[2.6. Detector de gestos y juego](#26-detector-de-gestos-y-juego)\
 &emsp;[2.7. Limitaciones](#27-limitaciones)\
-[3. Prototipo B: MORPHING DE CARAS](#3-prototipo-b)\
+[3. Prototipo B: MORPHING DE CARAS](#3-prototipo-b-facefusion---morphing-de-caras)\
 &emsp;[3.1. Regula la intensidad "con mano izquierda"](#31-regula-la-intensidad-con-mano-izquierda--)\
 &emsp;[3.2. Cómo ejecutar el morping](#32-cómo-ejecutar-el-morphing)\
 &emsp;[3.3. Cómo se construye la mezcla](#33-cómo-se-construye-la-mezcla)\
