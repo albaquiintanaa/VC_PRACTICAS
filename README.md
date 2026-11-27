@@ -102,7 +102,7 @@ python juego.py
 
 ### 1.4. Ejecución del prototipo B
 
-<!-- Puesta en marcha del prototipo B. -->
+Ir al apartado [3.2. Cómo ejecutar el morphing](#32-cómo-ejecutar-el-morphing)
 
 ### 1.5. Archivos que no se incluyen en el repositorio
 
@@ -560,12 +560,12 @@ Nuestro proyecto de _morphing_ transforma progresivamente el rostro que se ve en
 ### 3.1. Regula la intensidad "con mano izquierda" ;-)
 La cantidad de fusión entre las caras la regulamos con la distancia entre nuestro pulgar e índice de la mano izquierda, según podemos ver en la _Figura 2_.
 
-![Tres imágenes reales: pinza izquierda cerrada, intermedia y abierta, con intensidad del 0%, 50% y 100%](/VC_PRACTICAS/prototipoB/images/control_gestual.png)
+![Tres imágenes reales: pinza izquierda cerrada, intermedia y abierta, con intensidad del 0%, 50% y 100%](prototipoB/images/control_gestual.png)
 *Figura 2. Regulación de intesidad del morphing según separación entre dedos índice y pulgar de mano izquierda.*
 
 Para interpretar el gesto se siguen las puntas del pulgar y del índice, puntos **4 y 8** del modelo de manos. Su distancia se divide por el ancho de palma entre los puntos **5 y 17**, medido en píxeles; con esto logramos que estar cerca o lejos de la cámara sea independiente. MediaPipe nos proporciona los puntos de la mano y su lateralidad.
 
-![Puntos de referencia de la mano, propocionados por MediaPipe](/VC_PRACTICAS/prototipoB/images/handlandmarker.png)
+![Puntos de referencia de la mano, propocionados por MediaPipe](prototipoB/images/handlandmarker.png)
 *Figura 3. Puntos de referencia del modelo de manos. [Fuente: Hand Landmarker](https://ai.google.dev/edge/mediapipe/solutions/vision/hand_landmarker/python)*
 
 Si la mano izquierda deja de verse en la webcam, se retiene brevemente el valor de mezcla de las caras, pero después vuelve gradualmente a cero.
@@ -574,7 +574,7 @@ Si la mano izquierda deja de verse en la webcam, se retiene brevemente el valor 
 
 Necesitarás **Python 3.12**, una webcam y un vídeo pregrabado con una cara de referencia.
 
-Crea un entorno virtual con python desde `powershell` para instalar las dependencias y los modelos de caras y manos de MediaPipe:
+Desde la carpeta `prototipoB/`, que será nuestro directorio de trabajo para este caso, crea un entorno virtual con python desde `powershell` para instalar las dependencias y los modelos de caras y manos de MediaPipe:
 
 ```powershell
 python -m venv .venv
@@ -582,7 +582,7 @@ python -m venv .venv
 .\.venv\Scripts\python.exe scripts/download_models.py
 ```
 
-Coloca tu vídeo pregrabado en `data/videos/` y ajusta el parámetro `--video` en el comando de ejecución.
+Coloca tu vídeo pregrabado en `prototipoB/videos/` y ajusta el parámetro `--video` en el comando de ejecución.
 
 Desde la raíz del proyecto, ejecuta:
 
@@ -613,7 +613,7 @@ El proceso se divide en cuatro operaciones: **relacionar puntos → alinear las 
 
 #### 1. Encontrar puntos equivalentes
 
-![Rostros de los sujetos reales con puntos del mismo color en el extremo del ojo, la punta de la nariz y la comisura de la boca de webcam y referencia](/VC_PRACTICAS/prototipoB/images/landmarks.png)
+![Rostros de los sujetos reales con puntos del mismo color en el extremo del ojo, la punta de la nariz y la comisura de la boca de webcam y referencia](prototipoB/images/landmarks.png)
 *Figura 4. Relación entre ambas caras: los puntos del mismo color señalan posiciones anatómicas equivalentes en los dos sujetos de prueba. Sus coordenadas pueden diferir, pero lo que debe coincidir es el significado del punto.*
 
 Los **landmarks** son puntos estimados en posiciones del rostro: comisuras de los labios, ojos, nariz y contorno. Permiten relacionar, por ejemplo, la comisura de una cara con la misma comisura de la otra; o la punta de la nariz de una de las caras con la otra.
@@ -622,7 +622,7 @@ Cada fuente tiene su propio seguidor facial. El modelo utilizado devuelve **478 
 
 #### 2. Poner ambas caras en una referencia común
 
-![Infografía fotográfica: los rostros del hombre y la mujer se alinean en dos lienzos de 320 por 320 con una guía horizontal común en los ojos](/VC_PRACTICAS/prototipoB/images/alineacion.png)
+![Infografía fotográfica: los rostros del hombre y la mujer se alinean en dos lienzos de 320 por 320 con una guía horizontal común en los ojos](prototipoB/images/alineacion.png)
 *Figura 5. Comparar en el **mismo sistema de coordenadas**. La escala y la rotación sitúan los centros oculares sobre una guía común, conservando diferencias de proporción facial. Los dos lienzos muestran el espacio normalizado de 320 × 320.*
 
 Una cara puede aparecer más grande, desplazada o ligeramente inclinada. La alineación usa los centros oculares para normalizar escala y rotación en un lienzo de **320 × 320**.
@@ -631,7 +631,7 @@ Así, ojos, nariz y boca ocupan posiciones comparables antes de combinar las im�
 
 #### 3. Deformar pequeños triángulos
 
-![Rostros reales de webcam y referencia con mallas triangulares ilustrativas que convergen en una cara intermedia, con intensidad del 50%](/VC_PRACTICAS/prototipoB/images/deformacion.png)
+![Rostros reales de webcam y referencia con mallas triangulares ilustrativas que convergen en una cara intermedia, con intensidad del 50%](prototipoB/images/deformacion.png)
 *Figura 5. Primero compartir la forma, después combinar las texturas.*
 
 Pensemos en una fotografía dividida en pequeñas piezas triangulares flexibles. La triangulación conecta los puntos correspondientes; después se combinan tanto **la forma** —dónde están los puntos— como **la textura** —qué color tiene cada zona—:
@@ -641,11 +641,11 @@ forma_intermedia = (1 − α) × forma_webcam + α × forma_referencia
 textura_intermedia = (1 − α) × textura_webcam + α × textura_referencia_corregida
 ```
 
-OpenCV obtiene las texturas mediante mapas afines por triángulo y remuestreo. El código está en [engine.py](src/facefusion/morphing/engine.py); el fundamento de estas operaciones está en [Geometric Image Transformations](https://docs.opencv.org/4.x/da/d54/group__imgproc__transform.html).
+OpenCV obtiene las texturas mediante mapas afines por triángulo y remuestreo. El código está en [engine.py](prototipoB/src/facefusion/morphing/engine.py); el fundamento de estas operaciones está en [Geometric Image Transformations](https://docs.opencv.org/4.x/da/d54/group__imgproc__transform.html).
 
 #### 4. Devolver el rostro a la escena
 
-![Infografía fotográfica basada en los sujetos reales: rostro mezclado, máscara suave y webcam producen un resultado en el aula, con ampliación de la unión de la mejilla](/VC_PRACTICAS/prototipoB/images/integracion.png)
+![Infografía fotográfica basada en los sujetos reales: rostro mezclado, máscara suave y webcam producen un resultado en el aula, con ampliación de la unión de la mejilla](prototipoB/images/integracion.png)
 *Figura 6. Se utiliza una máscara para suavizar los bordes de la cara con la que se fusiona.*
 
 La cara mezclada vuelve a las coordenadas de webcam. Una máscara delimita la región que participa en la composición; el resto del fotograma conserva la webcam. Antes de mostrarlo se ajustan el tono y la unión del contorno.
