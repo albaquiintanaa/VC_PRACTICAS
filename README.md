@@ -44,6 +44,7 @@ Este trabajo ha sido realizado por el **`Grupo 27`**:
 &emsp;[3.2. Cómo ejecutar el morping](#32-cómo-ejecutar-el-morphing)\
 &emsp;[3.3. Cómo se construye la mezcla](#33-cómo-se-construye-la-mezcla)\
 &emsp;[3.4. Cómo se adapta el tono de piel](#34-cómo-se-adapta-el-tono-de-piel)\
+&emsp;[3.5. Umbrales y parámetros de suavizado](#35-umbrales-y-parámetros-de-suavizado)\
 [4. Referencias](#4-referencias)\
 [5. Nota: uso de IA](#nota-uso-de-ia)
 
@@ -570,6 +571,8 @@ Para interpretar el gesto se siguen las puntas del pulgar y del índice, puntos 
 
 Si la mano izquierda deja de verse en la webcam, se retiene brevemente el valor de mezcla de las caras, pero después vuelve gradualmente a cero.
 
+El porcentaje de la interfaz expresa el **recorrido del control gestual**, desde la pinza cerrada hasta la apertura máxima calibrada. El motor lo convierte en el coeficiente de mezcla mediante `α = 0,70 × control_alpha`: **0 %, 50 % y 100 % de control corresponden a un peso de la referencia del 0 %, 35 % y 70 %**, respectivamente. El mismo coeficiente se aplica a la forma y a la textura antes de integrar el rostro en la webcam. Este límite conserva al menos un 30 % de la contribución de webcam en esa interpolación y busca mantener continuidad con la cara y la escena originales. Es una decisión visual de diseño; no se ha demostrado que el 70 % sea el valor óptimo. El ajuste de color, la máscara y la integración posterior modifican los píxeles finales, por lo que esos pesos no describen una proporción exacta del color de salida.
+
 ### 3.2. Cómo ejecutar el morphing
 
 Necesitarás **Python 3.12**, una webcam y un vídeo pregrabado con una cara de referencia.
@@ -620,6 +623,19 @@ Los **landmarks** son puntos estimados en posiciones del rostro: comisuras de lo
 
 Cada fuente tiene su propio seguidor facial. El modelo utilizado devuelve **478 puntos** y el motor selecciona **68 correspondencias** para la deformación. Las capacidades del detector se describen en [Face Landmarker](https://ai.google.dev/edge/mediapipe/solutions/vision/face_landmarker/python); la selección de 68 puntos ha sido por decisión del equipo del proyecto.
 
+Los 68 puntos son un subconjunto de los índices de MediaPipe definido en `LANDMARK_IDS` de [engine.py](prototipoB/src/facefusion/morphing/engine.py), distribuido así:
+
+| Región | Puntos | Función en la deformación |
+| --- | ---: | --- |
+| Óvalo facial | 36 | Delimitar la cara y la máscara de composición |
+| Esquinas de los ojos | 4 | Alinear las caras y conservar referencias oculares |
+| Cejas | 10 | Guiar la forma de la zona superior |
+| Nariz | 5 | Anclar la región central |
+| Extremos exteriores de los labios | 4 | Guiar la boca sin triangular su borde interior |
+| Mejillas y frente | 9 | Distribuir la deformación entre el centro y el contorno |
+
+Esta selección busca cubrir las regiones principales con menos vértices y triángulos que una malla de 478 puntos, reduciendo el trabajo de las transformaciones por triángulo. Se excluyen los iris y los bordes móviles de los párpados para evitar que un parpadeo haga colapsar triángulos. A cambio, la malla representa con menos detalle los movimientos locales. El número 68 resulta de esta selección anatómica; no se ha realizado una comparación que pruebe que sea la mejor cantidad de puntos.
+
 #### 2. Poner ambas caras en una referencia común
 
 ![Infografía fotográfica: los rostros del hombre y la mujer se alinean en dos lienzos de 320 por 320 con una guía horizontal común en los ojos](prototipoB/images/alineacion.png)
@@ -637,6 +653,7 @@ Así, ojos, nariz y boca ocupan posiciones comparables antes de combinar las im�
 Pensemos en una fotografía dividida en pequeñas piezas triangulares flexibles. La triangulación conecta los puntos correspondientes; después se combinan tanto **la forma** —dónde están los puntos— como **la textura** —qué color tiene cada zona—:
 
 ```text
+α = 0,70 × control_alpha
 forma_intermedia = (1 − α) × forma_webcam + α × forma_referencia
 textura_intermedia = (1 − α) × textura_webcam + α × textura_referencia_corregida
 ```
@@ -660,9 +677,39 @@ Si las fuentes tienen distinta iluminación, una mezcla puede parecer una cara p
 | Adaptar el tono | Comparar medianas y desplazar el tono de la referencia hacia el de webcam |
 | Estabilizar | Suavizar el ajuste a lo largo del tiempo para reducir cambios bruscos |
 | Integrar el contorno | Adaptar la región facial a las condiciones de color de su frontera |
-| Suavizar | Aplicar una máscara con transición interior de 18 píxeles |
+| Suavizar | Aplicar una máscara con transición interior de 18 píxeles en el lienzo de 320 × 320 |
 
 La integración local utiliza `cv2.seamlessClone` con `NORMAL_CLONE`. Puedes imaginar el contorno como una costura: se busca que el brillo y el color encajen con la piel de alrededor, mientras se conservan las variaciones del rostro insertado.
+
+### 3.5. Umbrales y parámetros de suavizado
+
+El morphing utiliza transformaciones 2D y está pensado para caras aproximadamente frontales, suficientemente grandes y completas dentro del fotograma. Los filtros de [engine.py](prototipoB/src/facefusion/morphing/engine.py) rechazan observaciones que pueden producir deformaciones poco fiables:
+
+| Comprobación | Valor usado | Motivo |
+| --- | --- | --- |
+| Distancia entre centros oculares | Al menos 24 píxeles en cada fuente original | Evitar amplificar la incertidumbre de una cara demasiado pequeña al normalizarla |
+| Inclinación en el plano de la imagen (*roll*) | Como máximo ±35° | Limitar el funcionamiento a inclinaciones moderadas |
+| Desplazamiento lateral de la nariz respecto al punto medio de los ojos | Valor absoluto ≤ 0,38 veces la distancia entre centros oculares | Rechazar asimetrías compatibles con un giro lateral pronunciado |
+| Desplazamiento de la nariz sobre el eje perpendicular a la línea de los ojos | Entre 0,08 y 0,95 veces la distancia entre centros oculares | Excluir configuraciones alejadas de la disposición frontal esperada |
+| Relación entre el ancho del ojo menor y el mayor | Al menos 0,45 | Detectar una asimetría excesiva que puede indicar giro u oclusión |
+| Posición de los puntos seleccionados | Entre 1 y ancho/alto − 2 en las fuentes; entre 2 y 317 en el lienzo de 320 × 320 | Mantener un margen para el muestreo y la deformación |
+| Área y orientación de los triángulos | Área ≥ 0,08 píxeles² en el lienzo canónico y mismo signo que en la malla de referencia | Rechazar triángulos casi colapsados o invertidos |
+
+Las medidas basadas en la nariz son **indicadores geométricos 2D, no ángulos de giro 3D**. Si falla una comprobación, se muestra el fotograma actual de webcam sin morphing, evitando conservar una cara antigua.
+
+El suavizado busca reducir oscilaciones sin hacer demasiado lenta la respuesta. Los valores del control están en [pinch.py](prototipoB/src/facefusion/gestures/pinch.py) y los del color en [color.py](prototipoB/src/facefusion/morphing/color.py):
+
+| Parámetro | Valor | Criterio de diseño |
+| --- | --- | --- |
+| Constante de tiempo del gesto | 0,18 s | Atenuar pequeñas variaciones de la distancia entre dedos manteniendo una respuesta rápida |
+| Retención tras perder la mano | 0,40 s | Tolerar pérdidas breves sin cambiar inmediatamente la intensidad |
+| Constante de tiempo del retorno a cero | 0,30 s | Retirar la mezcla gradualmente si la mano no reaparece |
+| Zona de los extremos | 8 % en cada extremo del recorrido calibrado | Facilitar llegar a 0 % y 100 % pese al ruido de la medida |
+| Adquisición de la mano | Tres observaciones consecutivas válidas, confianza de lateralidad ≥ 0,75 y ancho de palma ≥ 20 píxeles | Evitar activar el control por una detección aislada, una lateralidad dudosa o una mano demasiado pequeña; el tiempo de adquisición depende de los FPS |
+| Constante de tiempo del color | 0,30 s | Amortiguar cambios entre fotogramas del ajuste de tono |
+| Transición interior de la máscara | 18 píxeles en el lienzo de 320 × 320 | Suavizar la unión sin extender la máscara al fondo del vídeo; su ancho en la imagen final depende de la escala de la cara |
+
+Estos umbrales y parámetros son **heurísticas de diseño, no valores aprendidos ni óptimos demostrados**. Su justificación expresa el compromiso buscado entre estabilidad, rapidez y rechazo de geometrías problemáticas. Para comprobar su adecuación haría falta comparar varias configuraciones con distintas personas, poses, distancias e iluminaciones y medir los rechazos, la estabilidad y el tiempo de respuesta.
 
 ---
 
