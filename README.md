@@ -17,7 +17,7 @@ Este trabajo ha sido realizado por el **`Grupo 27`**:
 | Prototipo | Demostración | Descripción |
 |---|---|---|
 | **A** - [GESTO GALÁCTICO](#2-prototipo-a-gesto-galáctico) | <a href="https://youtu.be/0eNo2aBeK-M"><img src="prototipoA/figuras/demo.gif" width="420"></a><br>[▶ Ver vídeo con sonido](https://youtu.be/0eNo2aBeK-M) | Juego de naves controlado con la cara. Los gestos los detectan tres modelos entrenados por nosotros. |
-| **B** - [MORPHING DE CARAS](#3-prototipo-b) | ![GIF](/VC_PRACTICAS/prototipoB/videos/video_demo.gif) | Morphing de caras controlado con los dedos índice y pulgar de la mano izquierda. |
+| **B** - [MORPHING DE CARAS](#3-prototipo-b) | <a href="https://youtu.be/JUoVybd1Fl0"><img src="prototipoB/videos/video_demo.gif" width="420"></a><br>[▶ Ver vídeo con sonido](https://youtu.be/JUoVybd1Fl0) | Morphing de caras controlado con los dedos índice y pulgar de la mano izquierda. |
 
 </div>
 
